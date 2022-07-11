@@ -124,8 +124,7 @@
                             <span class="input-group-text text-muted">
                                 <i class="fa-solid fa-user-tag"></i>
                             </span>
-                            <select asp-for="RoleIds" asp-items="ViewBag.Roles" class="selectpicker form-control" data-live-search="true" multiple data-selected-text-format="count >
-                5" title="เลือกข้อมูล" data-size="10"></select>
+                            <select asp-for="RoleIds" asp-items="ViewBag.Roles" class="selectpicker form-control" data-live-search="true" multiple data-selected-text-format="count > 5" title="เลือกข้อมูล" data-size="10"></select>
                         </div>
                         <span asp-validation-for="RoleIds" class="text-danger"></span>
                     </fieldset>

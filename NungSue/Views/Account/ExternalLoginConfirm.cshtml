@@ -1,0 +1,70 @@
+﻿@model RegisterConfirmViewModel
+@{
+    ViewData["Title"] = "สมัครสมาชิก";
+}
+
+<div class="mx-auto p-4" style="width:500px">
+    <div class="card shadow-lg">
+        <h3 class="card-header p-3 text-center">
+            ยืนยันการสมัครสมาชิก
+        </h3>
+        <div class="card-body">
+            <form autocomplete="off" method="post" enctype="multipart/form-data" autocomplete="off">
+                <input asp-for="ProfileImageUrl" hidden />
+                <div class="text-center">
+                    <img src="@Model.ProfileImageUrl" alt="avatar-sign" class="block mx-auto rounded-circle mb-2" id="DisplayImage" width="250" height="250" />
+                </div>
+                <fieldset class="mb-2">
+                    <label asp-for="ProfileImage" class="form-label fw-bold">รูปประจำตัว</label>
+                    <div class="input-group">
+                        <span class="input-group-text text-muted">
+                            <i class="fa-solid fa-image"></i>
+                        </span>
+                        <input class="form-control" type="file" asp-for="ProfileImage" accept="image/*">
+                    </div>
+                    <span asp-validation-for="ProfileImage" class="text-danger"></span>
+                </fieldset>
+                <fieldset class="mb-2">
+                    <label asp-for="Email" class="form-label fw-bold">อีเมล <span class="text-danger">*</span></label>
+                    <div class="input-group mb-1">
+                        <span class="input-group-text text-muted">
+                            <i class="fa-solid fa-envelope fa-lg"></i>
+                        </span>
+                        <input asp-for="Email" type="email" class="form-control form-control-lg max-length" data-val-email="อีเมลไม่ถูกต้อง" />
+                    </div>
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </fieldset>
+
+                <button class="btn btn-primary w-100 mb-3">บันทึกข้อมูล</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+    @section Script
+    {
+    <script src="~/lib/jquery-validation/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/lib/bootstrap-maxlength/bootstrap-maxlength.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('.max-length').maxlength();
+
+            function readIMG(input) {
+                if (input.files && input.files[0]) {
+                    var reader = new FileReader();
+
+                    reader.onload = function(e) {
+                        $('#DisplayImage').attr('src', e.target.result);
+                    }
+
+                    reader.readAsDataURL(input.files[0]);
+                }
+            }
+
+            $("#ProfileImage").change(function() {
+                readIMG(this);
+            });
+        });
+    </script>
+}

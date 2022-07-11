@@ -1,10 +1,12 @@
 ﻿using AspNetCoreHero.ToastNotification;
 using Azure.Storage.Blobs;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
 using NungSue.Constants;
 using NungSue.Entities;
 using NungSue.Interfaces;
 using NungSue.Services;
+using System.Security.Claims;
 
 namespace NungSue.Extensions
 {
@@ -61,9 +63,9 @@ namespace NungSue.Extensions
                     option.SignInScheme = AuthSchemes.ExternalAuth;
                     option.ClientId = configuration["Authentication:Google:ClientId"];
                     option.ClientSecret = configuration["Authentication:Google:ClientSecret"];
+                    option.ClaimActions.MapJsonKey(ClaimTypes.Actor, "picture");
                     option.CallbackPath = "/account/signin-google";
                 });
         }
-
     }
 }

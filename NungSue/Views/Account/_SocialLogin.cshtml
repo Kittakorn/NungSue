@@ -4,8 +4,8 @@
     <hr class="mx-auto float-end" style="width:45%" />
 </div>
 <div class="d-flex justify-content-around mb-3 gap-3">
-    <form method="post" asp-controller="Account" asp-action="ExternalLogin">
-        <button type="submit" class="btn w-100 d-flex justify-content-center border border-2" name="provider" value="Facebook">
+    <form method="post" asp-controller="Account" asp-action="ExternalLogin" asp-route-returnUrl="@ViewBag.ReturnUrl">
+        <button type="submit" class="btn w-100 d-flex justify-content-center border border-2 align-items-center" name="provider" value="Facebook">
             <svg class="me-2"
                  xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
                  width="30" height="30"
@@ -17,8 +17,8 @@
             Facebook
         </button>
     </form>
-    <form method="post" asp-controller="Account" asp-action="ExternalLogin">
-        <button type="submit" class="btn w-100 d-flex justify-content-center border border-2" name="provider" value="Line">
+    <form method="post" asp-controller="Account" asp-action="ExternalLogin" asp-route-returnUrl="@ViewBag.ReturnUrl">
+        <button type="submit" class="btn w-100 d-flex justify-content-center border border-2 align-items-center" name="provider" value="Line">
             <svg class="me-2"
                  xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
                  width="30" height="30"
@@ -30,9 +30,9 @@
             Line
         </button>
     </form>
-    <form method="post" asp-controller="Account" asp-action="ExternalLogin">
+    <form method="post" asp-controller="Account" asp-action="ExternalLogin" asp-route-returnUrl="@ViewBag.ReturnUrl">
 
-        <button type="submit" class="btn w-100 d-flex justify-content-center border border-2" name="provider" value="Google">
+        <button type="submit" class="btn w-100 d-flex justify-content-center border border-2 align-items-center" name="provider" value="Google">
             <svg class="me-2"
                  xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
                  width="30" height="30"

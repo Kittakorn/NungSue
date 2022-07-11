@@ -25,7 +25,7 @@ namespace NungSue.Entities
         public virtual DbSet<Category> Categories { get; set; }
         public virtual DbSet<Customer> Customers { get; set; }
         public virtual DbSet<CustomerAddress> CustomerAddresses { get; set; }
-        public virtual DbSet<CustomerExternalLogin> CustomerExternalLogins { get; set; }
+        public virtual DbSet<CustomerLogin> CustomerLogins { get; set; }
         public virtual DbSet<Favorite> Favorites { get; set; }
         public virtual DbSet<Order> Orders { get; set; }
         public virtual DbSet<OrderDetail> OrderDetails { get; set; }
@@ -194,14 +194,14 @@ namespace NungSue.Entities
 
                 entity.Property(e => e.LastName).HasMaxLength(50);
 
-                entity.Property(e => e.Password)
-                    .IsRequired()
-                    .HasMaxLength(100);
+                entity.Property(e => e.Password).HasMaxLength(100);
 
                 entity.Property(e => e.PhoneNumber)
                     .HasMaxLength(10)
                     .IsUnicode(false)
                     .IsFixedLength();
+
+                entity.Property(e => e.ProfileImage).HasMaxLength(250);
 
                 entity.Property(e => e.UpdateDate).HasColumnType("datetime");
             });
@@ -262,28 +262,23 @@ namespace NungSue.Entities
                     .HasConstraintName("FK_CustomerAddress_Customer");
             });
 
-            modelBuilder.Entity<CustomerExternalLogin>(entity =>
+            modelBuilder.Entity<CustomerLogin>(entity =>
             {
-                entity.HasKey(e => e.ExternalLoginId)
-                    .HasName("PK__Customer__A8FDB3AE181BE9BF");
+                entity.HasKey(e => new { e.LoginProvider, e.ProviderKey, e.CustomerId });
 
-                entity.ToTable("CustomerExternalLogin");
+                entity.ToTable("CustomerLogin");
 
-                entity.Property(e => e.ExternalLoginId).HasDefaultValueSql("(newsequentialid())");
+                entity.HasIndex(e => e.CustomerId, "IX_CustomerLogin_CustomerId");
 
-                entity.Property(e => e.CreateDate)
-                    .HasColumnType("datetime")
-                    .HasDefaultValueSql("(getdate())");
+                entity.Property(e => e.LoginProvider).HasMaxLength(50);
 
-                entity.Property(e => e.ProviderName)
-                    .IsRequired()
-                    .HasMaxLength(50);
+                entity.Property(e => e.ProviderKey).HasMaxLength(50);
 
                 entity.HasOne(d => d.Customer)
-                    .WithMany(p => p.CustomerExternalLogins)
+                    .WithMany(p => p.CustomerLogins)
                     .HasForeignKey(d => d.CustomerId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_CustomerExternalLogin_Customer");
+                    .HasConstraintName("FK_CustomerLogin_Customer");
             });
 
             modelBuilder.Entity<Favorite>(entity =>

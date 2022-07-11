@@ -42,7 +42,7 @@
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[CustomerExternalLogin]",
+         "Name": "[dbo].[CustomerLogin]",
          "ObjectType": 0
       },
       {

@@ -1,6 +1,7 @@
 ﻿using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using NungSue.Interfaces;
+using System.Drawing;
 
 namespace NungSue.Services
 {
@@ -25,8 +26,22 @@ namespace NungSue.Services
             var containerClient = _blobClient.GetBlobContainerClient(containerName);
             var blobClient = containerClient.GetBlobClient(name);
             var httpHeaders = new BlobHttpHeaders { ContentType = file.ContentType };
-            var data = await blobClient.UploadAsync(file.OpenReadStream(), httpHeaders);
+            await blobClient.UploadAsync(file.OpenReadStream(), httpHeaders);
             return blobClient.Uri.AbsolutePath;
+        }
+
+        public async Task<string> UploadFileBlobAsync(string name, string url, string containerName)
+        {
+            var containerClient = _blobClient.GetBlobContainerClient(containerName);
+            var blobClient = containerClient.GetBlobClient(name);
+
+            var client = new HttpClient();
+            var image = await client.GetAsync(url);
+            var contentType = image.Content.Headers.ContentType.ToString();
+
+            var httpHeaders = new BlobHttpHeaders { ContentType = contentType };
+            await blobClient.UploadAsync(image.Content.ReadAsStream(), httpHeaders);
+            return blobClient.Uri.AbsolutePath + $".{contentType.Split("/")[1]}" ;
         }
     }
 }

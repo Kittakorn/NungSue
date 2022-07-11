@@ -5,11 +5,10 @@ using System.Collections.Generic;
 
 namespace NungSue.Entities
 {
-    public partial class CustomerExternalLogin
+    public partial class CustomerLogin
     {
-        public Guid ExternalLoginId { get; set; }
-        public string ProviderName { get; set; }
-        public DateTime CreateDate { get; set; }
+        public string LoginProvider { get; set; }
+        public string ProviderKey { get; set; }
         public Guid CustomerId { get; set; }
 
         public virtual Customer Customer { get; set; }

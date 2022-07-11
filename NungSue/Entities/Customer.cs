@@ -10,7 +10,7 @@ namespace NungSue.Entities
         public Customer()
         {
             CustomerAddresses = new HashSet<CustomerAddress>();
-            CustomerExternalLogins = new HashSet<CustomerExternalLogin>();
+            CustomerLogins = new HashSet<CustomerLogin>();
             Favorites = new HashSet<Favorite>();
             Orders = new HashSet<Order>();
             ShoppingCarts = new HashSet<ShoppingCart>();
@@ -25,9 +25,10 @@ namespace NungSue.Entities
         public string PhoneNumber { get; set; }
         public DateTime CreateDate { get; set; }
         public DateTime? UpdateDate { get; set; }
+        public string ProfileImage { get; set; }
 
         public virtual ICollection<CustomerAddress> CustomerAddresses { get; set; }
-        public virtual ICollection<CustomerExternalLogin> CustomerExternalLogins { get; set; }
+        public virtual ICollection<CustomerLogin> CustomerLogins { get; set; }
         public virtual ICollection<Favorite> Favorites { get; set; }
         public virtual ICollection<Order> Orders { get; set; }
         public virtual ICollection<ShoppingCart> ShoppingCarts { get; set; }

@@ -1,11 +1,10 @@
 ﻿using AspNetCoreHero.ToastNotification.Abstractions;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NungSue.Constants;
 using NungSue.Entities;
+using NungSue.Interfaces;
 using NungSue.ViewModels;
 using System.Security.Claims;
 
@@ -15,12 +14,14 @@ namespace NungSue.Controllers
     public class AccountController : Controller
     {
         private readonly NungSueContext _context;
-        public INotyfService _notify;
+        private readonly INotyfService _notify;
+        private readonly IBlobService _blobService;
 
-        public AccountController(NungSueContext context, INotyfService notify)
+        public AccountController(NungSueContext context, INotyfService notify, IBlobService blobService)
         {
             _context = context;
             _notify = notify;
+            _blobService = blobService;
         }
 
         [Route("sign-in")]
@@ -62,13 +63,10 @@ namespace NungSue.Controllers
             _context.Customers.Update(customer);
             await _context.SaveChangesAsync();
 
-            await SignInCustomer(customer.Email, customer.CustomerId, $"{customer.FirstName} {customer.LastName}", model.RememberMe);
+            await SignInCustomerAsync(customer, model.RememberMe);
             _notify.Success("เข้าสู่ระบบสำเร็จ");
 
-            if (returnUrl != null)
-                return RedirectToLocal(returnUrl);
-
-            return RedirectToAction("Index", "Home");
+            return RedirectToLocal(returnUrl);
         }
 
         [Route("register")]
@@ -95,7 +93,7 @@ namespace NungSue.Controllers
 
             await _context.Customers.AddAsync(customer);
             await _context.SaveChangesAsync();
-            await SignInCustomer(customer.Email, customer.CustomerId, "");
+            await SignInCustomerAsync(customer);
 
             _notify.Success("สมัครสมาชิกสำเร็จ");
 
@@ -112,38 +110,121 @@ namespace NungSue.Controllers
         }
 
 
-        [AllowAnonymous]
         [HttpPost(nameof(ExternalLogin))]
-        public IActionResult ExternalLogin(string provider)
+        public IActionResult ExternalLogin(string provider, string returnUrl = null)
         {
-            var properties = new AuthenticationProperties { RedirectUri = "ExternalLoginCallback" };
-
+            var redirectUrl = Url.Action("ExternalLoginCallback", "Account", new { ReturnUrl = returnUrl });
+            var properties = new AuthenticationProperties { RedirectUri = redirectUrl };
             return Challenge(properties, provider);
         }
 
-        [AllowAnonymous]
         [HttpGet(nameof(ExternalLoginCallback))]
         public async Task<IActionResult> ExternalLoginCallback(string returnUrl = null)
         {
-            //Here we can retrieve the claims
-            var result = await HttpContext.AuthenticateAsync(AuthSchemes.ExternalAuth);
-            await SignInCustomer("test@gmail.com", new Guid(), "test");
-            return RedirectToAction("Index");
+            var info = await HttpContext.AuthenticateAsync(AuthSchemes.ExternalAuth);
+
+            var providerName = info.Principal.Identity.AuthenticationType;
+            var providerKey = info.Principal.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var loginProvider = await _context.CustomerLogins
+                .FirstOrDefaultAsync(x => x.LoginProvider == providerName && x.ProviderKey == providerKey);
+
+            if (loginProvider == null)
+                return RedirectToAction("ExternalLoginConfirm", new { returnUrl });
+
+            var customer = await _context.Customers.FindAsync(loginProvider.CustomerId);
+            customer.LastLogin = DateTime.Now;
+            _context.Customers.Update(customer);
+            _context.SaveChanges();
+
+            await SignInCustomerAsync(customer);
+            _notify.Success("เข้าสู่ระบบสำเร็จ");
+
+            return RedirectToLocal(returnUrl);
         }
 
-
-        private async Task SignInCustomer(string email, Guid customerId, string name, bool isRemember = false)
+        [Route("account/confirm")]
+        public async Task<IActionResult> ExternalLoginConfirm()
         {
+            var info = await HttpContext.AuthenticateAsync(AuthSchemes.ExternalAuth);
+
+            var providerName = info.Principal.Identity.AuthenticationType;
+            var email = info.Principal.FindFirstValue(ClaimTypes.Email);
+            var profileImage = info.Principal.FindFirstValue(ClaimTypes.Actor);
+
+            if (providerName == "Google")
+                profileImage = profileImage.Split("=s")[0];
+
+            var viewModel = new RegisterConfirmViewModel()
+            {
+                Email = email,
+                ProfileImageUrl = profileImage
+            };
+
+            return View(viewModel);
+        }
+
+        [HttpPost]
+        [Route("account/confirm")]
+        public async Task<IActionResult> ExternalLoginConfirm(RegisterConfirmViewModel model, string returnUrl = null)
+        {
+            if (!ModelState.IsValid)
+                return View(model);
+
+            var info = await HttpContext.AuthenticateAsync(AuthSchemes.ExternalAuth);
+
+            var providerName = info.Principal.Identity.AuthenticationType;
+            var providerKey = info.Principal.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var customer = new Customer
+            {
+                Email = model.Email,
+                LastLogin = DateTime.Now,
+                CustomerLogins = new List<CustomerLogin>
+                {
+                    new CustomerLogin
+                    {
+                        LoginProvider = providerName,
+                        ProviderKey = providerKey,
+                    }
+                },
+            };
+
+            var fileName = @"customer/" + DateTime.Now.ToString("yyyyMMddHHmmss");
+            if (model.ProfileImage != null)
+            {
+                fileName += Path.GetExtension(model.ProfileImage.FileName);
+                customer.ProfileImage = await _blobService.UploadFileBlobAsync(fileName, model.ProfileImage, "image");
+            }
+            else
+            {
+                customer.ProfileImage = await _blobService.UploadFileBlobAsync(fileName, model.ProfileImageUrl, "image");
+            }
+
+            await _context.Customers.AddAsync(customer);
+            await _context.SaveChangesAsync();
+
+            await SignInCustomerAsync(customer);
+            _notify.Success("เข้าสู่ระบบสำเร็จ");
+
+            return RedirectToLocal(returnUrl);
+        }
+
+        private async Task SignInCustomerAsync(Customer info, bool isRemember = false)
+        {
+            var name = $"{info.FirstName} {info.LastName}".Trim();
+
             var claims = new List<Claim>
             {
-                new Claim("Email", email),
-                new Claim("CustomerId",customerId.ToString()),
-                new Claim(ClaimTypes.Name,name)
+                new Claim(ClaimTypes.Email, info.Email),
+                new Claim(ClaimTypes.NameIdentifier,info.CustomerId.ToString()),
+                new Claim(ClaimTypes.Name,string.IsNullOrEmpty(name)?info.Email:name)
             };
 
             var authProperties = new AuthenticationProperties { IsPersistent = isRemember };
             var claimsIdentity = new ClaimsIdentity(claims, AuthSchemes.CustomerAuth);
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
+            await HttpContext.SignOutAsync(AuthSchemes.ExternalAuth);
             await HttpContext.SignInAsync(AuthSchemes.CustomerAuth, claimsPrincipal, authProperties);
         }
 
