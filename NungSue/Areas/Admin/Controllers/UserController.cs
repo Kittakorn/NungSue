@@ -16,11 +16,11 @@ namespace NungSue.Areas.Admin.Controllers
     [Authorize(AuthenticationSchemes = AuthSchemes.UserAuth)]
     public class UserController : Controller
     {
-        private readonly BookStoreContext _context;
+        private readonly NungSueContext _context;
         private readonly IConfiguration _config;
         private readonly IBlobService _blobService;
 
-        public UserController(BookStoreContext context, IConfiguration config, IBlobService blobService)
+        public UserController(NungSueContext context, IConfiguration config, IBlobService blobService)
         {
             _context = context;
             _config = config;

@@ -15,9 +15,9 @@ namespace NungSue.Areas.Admin.Controllers
     [Authorize(AuthenticationSchemes = AuthSchemes.UserAuth)]
     public class AccountController : Controller
     {
-        private readonly BookStoreContext _context;
+        private readonly NungSueContext _context;
 
-        public AccountController(BookStoreContext context)
+        public AccountController(NungSueContext context)
         {
             _context = context;
         }

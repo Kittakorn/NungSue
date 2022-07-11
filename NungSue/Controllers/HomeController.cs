@@ -13,11 +13,11 @@ namespace NungSue.Controllers
     [Authorize(AuthenticationSchemes = AuthSchemes.CustomerAuth)]
     public class HomeController : Controller
     {
-        private readonly BookStoreContext _context;
+        private readonly NungSueContext _context;
         private readonly IConfiguration _config;
 
 
-        public HomeController(BookStoreContext context, IConfiguration config)
+        public HomeController(NungSueContext context, IConfiguration config)
         {
             _context = context;
             _config = config;

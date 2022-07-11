@@ -11,9 +11,9 @@ namespace NungSue.Areas.Admin.Controllers
     [Route("[area]/[controller]")]
     public class RoleController : Controller
     {
-        private readonly BookStoreContext _context;
+        private readonly NungSueContext _context;
 
-        public RoleController(BookStoreContext context)
+        public RoleController(NungSueContext context)
         {
             _context = context;
         }

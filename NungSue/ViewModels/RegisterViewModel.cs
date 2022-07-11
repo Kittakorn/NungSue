@@ -21,7 +21,7 @@ namespace NungSue.ViewModels
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
-            var context = validationContext.GetService<BookStoreContext>();
+            var context = validationContext.GetService<NungSueContext>();
             var results = new List<ValidationResult>();
 
             if (context.Customers.Any(x => x.Email == Email))

@@ -30,7 +30,7 @@ namespace NungSue.Extensions
         public static void ConfigeDatabase(this IServiceCollection services, IConfiguration configuration)
         {
             var connectionString = configuration.GetConnectionString("DefaultConnection");
-            services.AddDbContext<BookStoreContext>(options => options.UseSqlServer(connectionString));
+            services.AddDbContext<NungSueContext>(options => options.UseSqlServer(connectionString));
         }
 
         public static void ConfigAuthentication(this IServiceCollection services, IConfiguration configuration)

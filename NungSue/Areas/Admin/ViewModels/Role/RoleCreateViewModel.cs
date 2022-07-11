@@ -14,7 +14,7 @@ namespace NungSue.Areas.Admin.ViewModels.Role
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
-            var context = validationContext.GetService<BookStoreContext>();
+            var context = validationContext.GetService<NungSueContext>();
             var results = new List<ValidationResult>();
 
             if (RoleId != Guid.Empty && context.Roles.Any(x => x.Name == RoleName && x.RoleId != RoleId))

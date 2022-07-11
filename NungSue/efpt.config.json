@@ -1,6 +1,6 @@
 ﻿{
    "CodeGenerationMode": 2,
-   "ContextClassName": "BookStoreContext",
+   "ContextClassName": "NungSueContext",
    "ContextNamespace": null,
    "DefaultDacpacSchema": null,
    "FilterSchemas": false,
@@ -94,7 +94,7 @@
          "ObjectType": 2
       }
    ],
-   "UiHint": "desktop-d5n490t\\sqlexpress.NungSue.dbo",
+   "UiHint": "FL2-SALES-PC-06\\SQLEXPRESS.NungSue",
    "UseBoolPropertiesWithoutDefaultSql": false,
    "UseDatabaseNames": true,
    "UseDbContextSplitting": false,

@@ -69,7 +69,7 @@ namespace NungSue.Areas.Admin.ViewModels.Book
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
-            var context = validationContext.GetService<BookStoreContext>();
+            var context = validationContext.GetService<NungSueContext>();
             var results = new List<ValidationResult>();
 
             if (context.Books.Any(x => x.Barcode == Barcode && x.BookId != BookId))

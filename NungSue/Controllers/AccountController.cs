@@ -14,10 +14,10 @@ namespace NungSue.Controllers
     [Route("account")]
     public class AccountController : Controller
     {
-        private readonly BookStoreContext _context;
+        private readonly NungSueContext _context;
         public INotyfService _notify;
 
-        public AccountController(BookStoreContext context, INotyfService notify)
+        public AccountController(NungSueContext context, INotyfService notify)
         {
             _context = context;
             _notify = notify;

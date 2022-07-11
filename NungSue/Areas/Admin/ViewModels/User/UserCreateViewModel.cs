@@ -37,7 +37,7 @@ namespace NungSue.Areas.Admin.ViewModels.User
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
-            var context = validationContext.GetService<BookStoreContext>();
+            var context = validationContext.GetService<NungSueContext>();
             var results = new List<ValidationResult>();
 
             if (context.Users.Any(x => x.Username == Username && x.UserId != UserId))
