@@ -1,5 +1,6 @@
 ﻿using AspNetCoreHero.ToastNotification;
 using Azure.Storage.Blobs;
+using LineAuthentication;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
 using NungSue.Constants;
@@ -37,35 +38,43 @@ namespace NungSue.Extensions
 
         public static void ConfigAuthentication(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddAuthentication()
+            services.AddAuthentication(x => x.DefaultScheme = AuthSchemes.CustomerAuth)
                 .AddCookie(AuthSchemes.ExternalAuth)
-                .AddCookie(AuthSchemes.UserAuth, AuthSchemes.UserAuth, option =>
+                .AddCookie(AuthSchemes.UserAuth, AuthSchemes.UserAuth, options =>
                 {
-                    option.LoginPath = new PathString("/Admin/SignIn");
-                    option.AccessDeniedPath = "/Error/UnAuthorized";
-                    option.ExpireTimeSpan = TimeSpan.FromDays(1);
+                    options.LoginPath = new PathString("/Admin/SignIn");
+                    options.AccessDeniedPath = "/Error/UnAuthorized";
                 })
-                .AddCookie(AuthSchemes.CustomerAuth, AuthSchemes.CustomerAuth, option =>
+                .AddCookie(AuthSchemes.CustomerAuth, AuthSchemes.CustomerAuth, options =>
                 {
-                    option.LoginPath = new PathString("/account/sign-in");
-                    option.AccessDeniedPath = "/Error/UnAuthorized";
-                    option.ExpireTimeSpan = TimeSpan.FromDays(1);
+                    options.LoginPath = new PathString("/account/sign-in");
+                    options.AccessDeniedPath = "/Error/UnAuthorized";
+                    options.ExpireTimeSpan = TimeSpan.FromDays(1);
                 })
-                .AddFacebook(option =>
+                .AddFacebook(options =>
                 {
-                    option.SignInScheme = AuthSchemes.ExternalAuth;
-                    option.AppId = configuration["Authentication:Facebook:AppId"];
-                    option.AppSecret = configuration["Authentication:Facebook:AppSecret"];
-                    option.CallbackPath = "/account/signin-facebook";
+                    options.SignInScheme = AuthSchemes.ExternalAuth;
+                    options.AppId = configuration["Authentication:Facebook:AppId"];
+                    options.AppSecret = configuration["Authentication:Facebook:AppSecret"];
+                    options.CallbackPath = "/account/signin-facebook";
                 })
-                .AddGoogle(option =>
+                .AddGoogle(options =>
                 {
-                    option.SignInScheme = AuthSchemes.ExternalAuth;
-                    option.ClientId = configuration["Authentication:Google:ClientId"];
-                    option.ClientSecret = configuration["Authentication:Google:ClientSecret"];
-                    option.ClaimActions.MapJsonKey(ClaimTypes.Actor, "picture");
-                    option.CallbackPath = "/account/signin-google";
-                });
+                    options.SignInScheme = AuthSchemes.ExternalAuth;
+                    options.ClientId = configuration["Authentication:Google:ClientId"];
+                    options.ClientSecret = configuration["Authentication:Google:ClientSecret"];
+                    options.ClaimActions.MapJsonKey(ClaimTypes.Actor, "picture");
+                    options.CallbackPath = "/account/signin-google";
+                })
+                .AddLine(options =>
+                 {
+                     options.SignInScheme = AuthSchemes.ExternalAuth;
+                     options.ClientId = configuration["Authentication:Line:ChannelId"];
+                     options.ClientSecret = configuration["Authentication:Line:ChannelSecret"];
+                     options.CallbackPath = "/account/signin-line";
+                     options.Scope.Add("email");
+                     options.ClaimActions.MapJsonKey(ClaimTypes.Email, "email");
+                 });
         }
     }
 }

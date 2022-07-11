@@ -10,20 +10,6 @@
         </h3>
         <div class="card-body">
             <form autocomplete="off" method="post" enctype="multipart/form-data" autocomplete="off">
-                <input asp-for="ProfileImageUrl" hidden />
-                <div class="text-center">
-                    <img src="@Model.ProfileImageUrl" alt="avatar-sign" class="block mx-auto rounded-circle mb-2" id="DisplayImage" width="250" height="250" />
-                </div>
-                <fieldset class="mb-2">
-                    <label asp-for="ProfileImage" class="form-label fw-bold">รูปประจำตัว</label>
-                    <div class="input-group">
-                        <span class="input-group-text text-muted">
-                            <i class="fa-solid fa-image"></i>
-                        </span>
-                        <input class="form-control" type="file" asp-for="ProfileImage" accept="image/*">
-                    </div>
-                    <span asp-validation-for="ProfileImage" class="text-danger"></span>
-                </fieldset>
                 <fieldset class="mb-2">
                     <label asp-for="Email" class="form-label fw-bold">อีเมล <span class="text-danger">*</span></label>
                     <div class="input-group mb-1">

@@ -2,14 +2,17 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using NungSue.ActionFilters;
 using NungSue.Constants;
 using NungSue.Entities;
+using NungSue.Helpers;
 using NungSue.Interfaces;
 using NungSue.ViewModels;
 using System.Security.Claims;
 
 namespace NungSue.Controllers
 {
+    [IsAuthorize]
     [Route("account")]
     public class AccountController : Controller
     {
@@ -27,10 +30,6 @@ namespace NungSue.Controllers
         [Route("sign-in")]
         public IActionResult SignIn(string returnUrl)
         {
-            if (User.Identity.IsAuthenticated && User.Identity.AuthenticationType == AuthSchemes.CustomerAuth)
-            {
-                return RedirectToAction("Index", "Home");
-            }
             ViewBag.ReturnUrl = returnUrl;
             return View();
         }
@@ -72,7 +71,6 @@ namespace NungSue.Controllers
         [Route("register")]
         public IActionResult Register()
         {
-
             return View();
         }
 
@@ -147,19 +145,9 @@ namespace NungSue.Controllers
         public async Task<IActionResult> ExternalLoginConfirm()
         {
             var info = await HttpContext.AuthenticateAsync(AuthSchemes.ExternalAuth);
-
-            var providerName = info.Principal.Identity.AuthenticationType;
             var email = info.Principal.FindFirstValue(ClaimTypes.Email);
-            var profileImage = info.Principal.FindFirstValue(ClaimTypes.Actor);
 
-            if (providerName == "Google")
-                profileImage = profileImage.Split("=s")[0];
-
-            var viewModel = new RegisterConfirmViewModel()
-            {
-                Email = email,
-                ProfileImageUrl = profileImage
-            };
+            var viewModel = new RegisterConfirmViewModel() { Email = email };
 
             return View(viewModel);
         }
@@ -175,10 +163,20 @@ namespace NungSue.Controllers
 
             var providerName = info.Principal.Identity.AuthenticationType;
             var providerKey = info.Principal.FindFirstValue(ClaimTypes.NameIdentifier);
+            var firstName = info.Principal.FindFirstValue(ClaimTypes.GivenName);
+            var lastName = info.Principal.FindFirstValue(ClaimTypes.Surname);
+            
+            string profileImage = null;
+            if (providerName == "Facebook")
+                profileImage = $"https://graph.facebook.com/{providerKey}/picture?type=large";
+            else if (providerName == "Google")
+                profileImage = info.Principal.FindFirstValue(ClaimTypes.Actor);
 
             var customer = new Customer
             {
                 Email = model.Email,
+                FirstName = firstName,
+                LastName = lastName,
                 LastLogin = DateTime.Now,
                 CustomerLogins = new List<CustomerLogin>
                 {
@@ -187,18 +185,13 @@ namespace NungSue.Controllers
                         LoginProvider = providerName,
                         ProviderKey = providerKey,
                     }
-                },
+                }
             };
 
-            var fileName = @"customer/" + DateTime.Now.ToString("yyyyMMddHHmmss");
-            if (model.ProfileImage != null)
+            if (profileImage != null)
             {
-                fileName += Path.GetExtension(model.ProfileImage.FileName);
-                customer.ProfileImage = await _blobService.UploadFileBlobAsync(fileName, model.ProfileImage, "image");
-            }
-            else
-            {
-                customer.ProfileImage = await _blobService.UploadFileBlobAsync(fileName, model.ProfileImageUrl, "image");
+                var fileName = @"customer/" + DateTime.Now.ToString("yyyyMMddHHmmss");
+                customer.ProfileImage = await _blobService.UploadFileBlobAsync(fileName, profileImage, "image");
             }
 
             await _context.Customers.AddAsync(customer);
@@ -212,13 +205,15 @@ namespace NungSue.Controllers
 
         private async Task SignInCustomerAsync(Customer info, bool isRemember = false)
         {
-            var name = $"{info.FirstName} {info.LastName}".Trim();
+            var fullName = $"{info.FirstName} {info.LastName}".Trim();
+            if (string.IsNullOrEmpty(fullName))
+                fullName = info.Email;
 
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Email, info.Email),
                 new Claim(ClaimTypes.NameIdentifier,info.CustomerId.ToString()),
-                new Claim(ClaimTypes.Name,string.IsNullOrEmpty(name)?info.Email:name)
+                new Claim(ClaimTypes.Name,fullName)
             };
 
             var authProperties = new AuthenticationProperties { IsPersistent = isRemember };
@@ -227,6 +222,7 @@ namespace NungSue.Controllers
             await HttpContext.SignOutAsync(AuthSchemes.ExternalAuth);
             await HttpContext.SignInAsync(AuthSchemes.CustomerAuth, claimsPrincipal, authProperties);
         }
+
 
         #region Helper
         private IActionResult RedirectToLocal(string returnUrl)

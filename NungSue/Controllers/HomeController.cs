@@ -16,7 +16,6 @@ namespace NungSue.Controllers
         private readonly NungSueContext _context;
         private readonly IConfiguration _config;
 
-
         public HomeController(NungSueContext context, IConfiguration config)
         {
             _context = context;

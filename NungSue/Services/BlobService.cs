@@ -32,16 +32,21 @@ namespace NungSue.Services
 
         public async Task<string> UploadFileBlobAsync(string name, string url, string containerName)
         {
-            var containerClient = _blobClient.GetBlobContainerClient(containerName);
-            var blobClient = containerClient.GetBlobClient(name);
-
             var client = new HttpClient();
             var image = await client.GetAsync(url);
             var contentType = image.Content.Headers.ContentType.ToString();
+            var fileExtension = contentType.Split("/")[1];
+
+            if (fileExtension == "jpeg")
+                fileExtension = "jpg";
+            name += $".{fileExtension}";
+
+            var containerClient = _blobClient.GetBlobContainerClient(containerName);
+            var blobClient = containerClient.GetBlobClient(name);
 
             var httpHeaders = new BlobHttpHeaders { ContentType = contentType };
             await blobClient.UploadAsync(image.Content.ReadAsStream(), httpHeaders);
-            return blobClient.Uri.AbsolutePath + $".{contentType.Split("/")[1]}" ;
+            return blobClient.Uri.AbsolutePath;
         }
     }
 }

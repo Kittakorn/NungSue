@@ -9,10 +9,6 @@ public class RegisterConfirmViewModel : IValidatableObject
     [Required(ErrorMessage = "กรุณากรอกข้อมูล")]
     public string Email { get; set; }
 
-    public IFormFile ProfileImage { get; set; }
-
-    public string ProfileImageUrl { get; set; }
-
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
         var context = validationContext.GetService<NungSueContext>();
