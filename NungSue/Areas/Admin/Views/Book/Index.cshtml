@@ -1,0 +1,91 @@
+﻿<div class="d-flex justify-content-between">
+    <h3>หนังสือ</h3>
+    <div class="d-flex align-items-center">
+        <a class="btn btn-success" asp-action="Create"><i class="fa-solid fa-plus"></i>&ensp;เพิ่มข้อมูลหนังสือ</a>
+    </div>
+</div>
+<hr />
+<table id="table" class="table table-striped table-bordered" width="100%">
+    <thead>
+        <tr>
+            <th class="all">บาร์โค้ด</th>
+            <th>ประเภทหนังสือ</th>
+            <th class="all">ชื่อหนังสือ</th>
+            <th class="none">แท็ก</th>
+            <th class="none">ผู้แต่ง</th>
+            <th class="all">ราคา</th>
+            <th>วันจำหน่าย</th>
+            <th width="1">สถานะ</th>
+            <th class="all p-1" width="1"></th>
+        </tr>
+    </thead>
+</table>
+
+
+@section Style {
+    <link rel="stylesheet" href="~/lib/datatables-net/datatables.min.css">
+}
+
+    @section Script {
+    <script src="~/lib/datatables-net/datatables.min.js"></script>
+
+    <script>
+        $(function() {
+            $('#table').DataTable({
+                responsive: true,
+                language: {
+                    url: "//cdn.datatables.net/plug-ins/1.12.1/i18n/th.json"
+                },
+                processing: true,
+                serverSide: true,
+                filter: true,
+                ajax: {
+                    url: "Book/GetBooks",
+                    type: "POST",
+                    datatype: "json"
+                },
+                order: [],
+                columnDefs: [
+                    { targets: [-1], orderable: false },
+                ],
+                createdRow: function(row, data, index) {
+                    $(row).addClass('text-nowrap')
+                },
+                columns: [
+                    { data: "barcode", name: "Barcode" },
+                    { data: "bookCategory", name: "Category.Name" },
+                    { data: "title", name: "Title" },
+                    { data: "tags" },
+                    { data: "authors" },
+                    {
+                        data: "price", name: "Price", class: "text-end",
+                        render: function(data, type, row) {
+                            if (row.promotionPrice == null) return data
+                            return `<small><del class="text-danger">${data}</del></small> ${row.promotionPrice}`
+                        }
+                    },
+                    { data: "publishedOn", name: "PublishedOn" },
+                    {
+                        data: "isPublish", name: "IsPublish",
+                        render: function(data, row) {
+                            if (data === true) return '<span class="text-success">เปิดขาย</span>';
+                            return '<span class="text-danger">ปิดการขาย</span>';
+                        }
+                    },
+                    {
+                        data: "bookId", class: "p-1",
+                        render: function(data, row) {
+                            return `<div class="btn-group" role="group">
+                                                                 <button id="btnGroup" type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">จัดการข้อมูล</button>
+                                                                 <ul class="dropdown-menu" aria-labelledby="btnGroup">
+                                                                      <li><a class="dropdown-item" href="Book/Edit/${data}"><i class="fa-solid fa-pencil text-muted"></i>&ensp;แก้ไข</a></li>
+                                                                      <li><a class="dropdown-item" href="Book/Details/${data}"><i class="fa-solid fa-circle-info text-muted"></i>&ensp;รายละเอียด</a></li>
+                                                                 </ul>
+                                                            </div>`;
+                        }
+                    }
+                ]
+            });
+        });
+    </script>
+}

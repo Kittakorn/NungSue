@@ -1,0 +1,50 @@
+﻿@model NungSue.ViewModels.CategoryTagViewModel
+
+<div class="d-flex justify-content-between align-items-center mb-2">
+    <h4>@(Model.Type=="category"?"หมวดหมู่":"แท็ก") : @Model.Name</h4>
+    <span class="fs-6">ทั้งหมด : @Model.TotalRecord รายการ</span>
+</div>
+<div class="row">
+    @foreach (var item in Model.BookItems)
+    {
+        <div class="col-lg-4">
+            <div class="card book-item mb-3 shadow-lg">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-4">
+                            <img src="@item.BookImageUrl" class="img-thumbnail img-fluid">
+                        </div>
+                        <div class="col-8 ps-0">
+                            <div class="d-flex bd-highlight">
+                                <div class="w-100 pe-3">
+                                    <p class="fw-bold book-title">@item.Title</p>
+                                    <p class="book-description text-muted">@item.Description</p>
+                                    @if (item.PromotionPrice != null)
+                                    {
+                                        <small class="position-absolute bottom-0 me-3 text-muted" style="padding-bottom:18px">* @item.PromotionText</small>
+                                    }
+
+                                </div>
+                                <div class="flex-shrink-1">
+                                    <i class="fa-solid fa-heart text-muted fa-lg pb-3 position-absolute top-0 end-0 me-3 pt-3"></i>
+                                    <div class="position-absolute end-0 bottom-0 me-3 pb-3">
+                                        @if (item.PromotionPrice == null)
+                                        {
+                                            <span class="text-danger fs-5">฿@item.Price</span>
+                                        }
+                                        else
+                                        {
+                                            <small class="text-muted pe-2"></small>
+                                            <span class="text-danger fs-5"><del class="text-muted fs-6">฿@item.Price</del> ฿@item.PromotionPrice</span>
+                                        }
+                                        <i class="fa-solid fa-cart-shopping text-muted fa-lg" style="padding-bottom:3px"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>

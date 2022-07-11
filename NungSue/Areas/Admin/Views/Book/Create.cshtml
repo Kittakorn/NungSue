@@ -1,0 +1,271 @@
+﻿@model BookCreateViewModel
+
+
+<h3 class="mb-3">@(Model.BookId == Guid.Empty? "เพิ่มข้อมูลหนังสือ":"แก้ไขข้อมูลหนังสือ")</h3>
+<form method="post" enctype="multipart/form-data" autocomplete="off">
+    <div class="d-flex justify-content-between">
+        <a asp-action="Index" class="btn btn-outline-secondary mr-2"><i class="fa-solid fa-arrow-left"></i>&ensp;ย้อนกลับ</a>
+        <div class="d-flex align-items-end">
+            <div class="me-4">
+                <div class="form-check">
+                    <input class="form-check-input" asp-for="IsPublish" type="checkbox">
+                    <label class="form-check-label ms-2" asp-for="IsPublish">
+                        เปิดขาย
+                    </label>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-success"><i class="fa-solid fa-floppy-disk"></i>&ensp;บันทึกข้อมูล</button>
+        </div>
+    </div>
+    <hr />
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="row">
+                <div class="col-lg-3">
+                    <fieldset class="mb-2">
+                        <label asp-for="Barcode" class="form-label fw-bold">
+                            บาร์โค้ดหนังสือ
+                            @if (Model.BookId == Guid.Empty)
+                            {
+                                <span class="text-danger">*</span>
+                            }
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text text-muted">
+                                <i class="fa-solid fa-barcode"></i>
+                            </span>
+                            @if (Model.BookId == Guid.Empty)
+                            {
+                                <input asp-for="Barcode" type="text" class="form-control max-length" data-mask="0000000000000">
+                            }
+                            else
+                            {
+                                <input asp-for="Barcode" type="text" class="form-control" readonly style="cursor: not-allowed">
+                            }
+                        </div>
+                        <span asp-validation-for="Barcode" class="text-danger"></span>
+                    </fieldset>
+                </div>
+                <div class="col-lg-9">
+                    <fieldset class="mb-2">
+                        <label asp-for="Title" class="form-label fw-bold">ชื่อหนังสือ <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text text-muted">
+                                <i class="fa-solid fa-pencil"></i>
+                            </span>
+                            <input asp-for="Title" type="text" class="form-control max-length">
+                        </div>
+                        <span asp-validation-for="Title" class="text-danger"></span>
+                    </fieldset>
+                </div>
+                <div class="col-lg-12">
+                    <fieldset class="mb-2">
+                        <label asp-for="Description" class="form-label fw-bold">รายละเอียด</label>
+                        <div class="input-group">
+                            <span class="input-group-text text-muted">
+                                <i class="fa-solid fa-pencil"></i>
+                            </span>
+                            <textarea asp-for="Description" type="text" class="form-control max-length" rows="4"></textarea>
+                        </div>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </fieldset>
+                </div>
+                <div class="col-lg-5">
+                    <fieldset class="mb-2">
+                        <label asp-for="CategoryId" class="form-label fw-bold">ประเภทหนังสือ <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text text-muted">
+                                <i class="fa-solid fa-book-bookmark"></i>
+                            </span>
+                            <select asp-for="CategoryId" asp-items="ViewBag.Categories" class="selectpicker form-control" data-live-search="true" data-size="10"></select>
+                        </div>
+                        <span asp-validation-for="CategoryId" class="text-danger"></span>
+                    </fieldset>
+                </div>
+                <div class="col-lg-7">
+                    <fieldset class="mb-2">
+                        <label asp-for="TagIds" class="form-label fw-bold">แท็กหนังสือ <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text text-muted">
+                                <i class="fa-solid fa-tags"></i>
+                            </span>
+                            <select asp-for="TagIds" asp-items="ViewBag.Tags" class="selectpicker form-control" data-live-search="true" multiple data-selected-text-format="count > 2" title="เลือกข้อมูล" data-size="10"></select>
+                        </div>
+                        <span asp-validation-for="TagIds" class="text-danger"></span>
+                    </fieldset>
+                </div>
+                <div class="col-lg-5">
+                    <fieldset class="mb-2">
+                        <label asp-for="PublisherId" class="form-label fw-bold">สำนักพิม์ <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text text-muted">
+                                <i class="fa-solid fa-building"></i>
+                            </span>
+                            <select asp-for="PublisherId" asp-items="ViewBag.Publishers" class="selectpicker form-control" data-live-search="true" data-size="10"></select>
+                        </div>
+                        <span asp-validation-for="PublisherId" class="text-danger"></span>
+                    </fieldset>
+                </div>
+                <div class="col-lg-7">
+                    <fieldset class="mb-2">
+                        <label asp-for="AuthorIds" class="form-label fw-bold">ผู้แต่ง <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text text-muted">
+                                <i class="fa-solid fa-user-pen"></i>
+                            </span>
+                            <select asp-for="AuthorIds" asp-items="ViewBag.Authors" class="selectpicker form-control" data-live-search="true" multiple data-selected-text-format="count > 2" title="เลือกข้อมูล" data-size="10"></select>
+                        </div>
+                        <span asp-validation-for="AuthorIds" class="text-danger"></span>
+                    </fieldset>
+                </div>
+                <div class="col-lg-3">
+                    <fieldset class="mb-2">
+                        <label asp-for="Price" class="form-label fw-bold">ราคา <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text text-muted">
+                                <i class="fa-brands fa-btc"></i>
+                            </span>
+                            <input asp-for="Price" type="text" class="form-control" data-mask="#,000" data-mask-reverse="true">
+                        </div>
+                        <span asp-validation-for="Price" class="text-danger"></span>
+                    </fieldset>
+                </div>
+                <div class="col-lg-3">
+                    <fieldset class="mb-2">
+                        <label asp-for="Size" class="form-label fw-bold">ขนาด <small class="text-muted d-inline ">(กว้าง x ยาว x สูง มม.)</small> <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text text-muted">
+                                <i class="fa-solid fa-arrows-left-right-to-line"></i>
+                            </span>
+                            <input asp-for="Size" type="text" class="form-control" data-mask="000 X 000 X 00">
+                        </div>
+                        <span asp-validation-for="Size" class="text-danger"></span>
+                    </fieldset>
+                </div>
+                <div class="col-lg-3">
+                    <fieldset class="mb-2">
+                        <label asp-for="Weight" class="form-label fw-bold">น้ำหนัก <small class="text-muted d-inline ">(กรัม)</small> <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text text-muted">
+                                <i class="fa-solid fa-weight-scale"></i>
+                            </span>
+                            <input asp-for="Weight" type="text" class="form-control" data-mask="#,000" data-mask-reverse="true">
+                        </div>
+                        <span asp-validation-for="Weight" class="text-danger"></span>
+                    </fieldset>
+                </div>
+                <div class="col-lg-3">
+                    <fieldset class="mb-2">
+                        <label asp-for="NumberOfPage" class="form-label fw-bold">จำนวนหน้า <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text text-muted">
+                                <i class="fa-solid fa-list-ol"></i>
+                            </span>
+                            <input asp-for="NumberOfPage" type="text" class="form-control" data-mask="#,000" data-mask-reverse="true">
+                        </div>
+                        <span asp-validation-for="NumberOfPage" class="text-danger"></span>
+                    </fieldset>
+                </div>
+                <div class="col-lg-4">
+                    <fieldset class="mb-2">
+                        <label asp-for="BookImage" class="form-label fw-bold">
+                            ภาพปก
+                            @if (Model.BookId == Guid.Empty)
+                            {
+                                <span class="text-danger">*</span>
+                            }
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text text-muted">
+                                <i class="fa-solid fa-image"></i>
+                            </span>
+                            @if (Model.BookId == Guid.Empty)
+                            {
+                                <input class="form-control" type="file" asp-for="BookImage" accept="image/*" data-val="true" data-val-required="กรุณาเลือกภาพปก" aria-describedby="BookImage-error" aria-invalid="true">
+                            }
+                            else
+                            {
+                                <input class="form-control" type="file" asp-for="BookImage" accept="image/*">
+                            }
+                        </div>
+                        <span asp-validation-for="BookImage" class="text-danger"></span>
+                    </fieldset>
+                </div>
+                <div class="col-lg-4">
+                    <fieldset class="mb-2">
+                        <label asp-for="MonthOfPublication" class="form-label fw-bold">เดือนปีที่พิมพ์ <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text text-muted">
+                                <i class="fa-solid fa-calendar-day"></i>
+                            </span>
+                            <input asp-for="MonthOfPublication" type="month" class="form-control">
+                        </div>
+                        <span asp-validation-for="MonthOfPublication" class="text-danger"></span>
+                    </fieldset>
+                </div>
+                <div class="col-lg-4">
+                    <fieldset class="mb-2">
+                        <label asp-for="PublishedOn" class="form-label fw-bold">วันที่วางขาย <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text text-muted">
+                                <i class="fa-solid fa-calendar-day"></i>
+                            </span>
+                            <input asp-for="PublishedOn" type="datetime-local" class="form-control" value="@Model.PublishedOn.ToString("yyyy-MM-ddTHH:mm")">
+                        </div>
+                        <span asp-validation-for="PublishedOn" class="text-danger"></span>
+                    </fieldset>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <fieldset class="mb-2">
+                <label asp-for="Content" class="form-label fw-bold">เนื้อหา <span class="text-danger">*</span></label>
+                <div class="input-group">
+                    <span class="input-group-text text-muted">
+                        <i class="fa-solid fa-pencil"></i>
+                    </span>
+                    <textarea asp-for="Content" type="text" class="form-control" rows="10"></textarea>
+                </div>
+                <span asp-validation-for="Content" class="text-danger"></span>
+            </fieldset>
+            <fieldset class="mb-2">
+                <label asp-for="ListOfContents" class="form-label fw-bold">สารบัญ</label>
+                <div class="input-group">
+                    <span class="input-group-text text-muted">
+                        <i class="fa-solid fa-pencil"></i>
+                    </span>
+                    <textarea asp-for="ListOfContents" type="text" class="form-control" rows="8"></textarea>
+                </div>
+                <span asp-validation-for="ListOfContents" class="text-danger"></span>
+            </fieldset>
+        </div>
+    </div>
+</form>
+
+@section Style
+    {
+    <link rel="stylesheet" href="~/lib/bootstrap-select/css/bootstrap-select.min.css" />
+    <link rel="stylesheet" href="~/lib/icheck/skins/flat/blue.min.css" />
+
+}
+
+    @section Script
+    {
+    <script src="~/lib/bootstrap-select/js/bootstrap-select.min.js"></script>
+    <script src="~/lib/bootstrap-select/js/i18n/defaults-th_TH.min.js"></script>
+    <script src="~/lib/icheck/icheck.js"></script>
+    <script src="~/lib/jquery-validation/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/lib/jquery-mask/jquery.mask.min.js"></script>
+    <script src="~/lib/bootstrap-maxlength/bootstrap-maxlength.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('.max-length').maxlength();
+            $('.selectpicker').selectpicker();
+            $('input').iCheck({
+                checkboxClass: 'icheckbox_flat-blue',
+                radioClass: 'iradio_flat-blue'
+            });
+        });
+    </script>
+}

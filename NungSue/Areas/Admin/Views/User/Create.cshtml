@@ -1,0 +1,179 @@
+﻿@model UserCreateViewModel
+
+
+<h3 class="mb-3">@(Model.UserId==Guid.Empty?"เพิ่มข้อมูลพนักงาน":"แก้ไขข้อมูลพนักงาน")</h3>
+<form method="post" enctype="multipart/form-data" autocomplete="off">
+    <div class="d-flex justify-content-between">
+        <a asp-action="Index" class="btn btn-outline-secondary mr-2"><i class="fa-solid fa-arrow-left"></i>&ensp;ย้อนกลับ</a>
+        <div class="d-flex align-items-end">
+            <div class="me-4">
+                <div class="form-check">
+                    <input class="form-check-input" asp-for="IsActive" type="checkbox">
+                    <label class="form-check-label ms-2" asp-for="IsActive">
+                        ใช้งาน
+                    </label>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-success"><i class="fa-solid fa-floppy-disk"></i>&ensp;บันทึกข้อมูล</button>
+        </div>
+    </div>
+    <hr />
+    <div class="row mt-4">
+        <div class="col-sm-4 text-center">
+            <img src="@(Model.UserId == Guid.Empty?"/img/avatar-sign.png":Model.ProfileImageUrl)" alt="avatar-sign" class="block mx-auto rounded-circle mb-2" id="DisplayImage" width="250" height="250" />
+        </div>
+        <div class="col-sm-8">
+            <div class="row">
+                <div class="col-lg-12">
+                    <fieldset class="mb-2">
+                        <label asp-for="Username" class="form-label fw-bold">
+                            ชื่อผู้ใช้งาน
+                            @if (Model.UserId == Guid.Empty)
+                            {
+                                <span class="text-danger">*</span>
+                            }
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text text-muted">
+                                <i class="fa-solid fa-user"></i>
+                            </span>
+                            @if (Model.UserId == Guid.Empty)
+                            {
+                                <input asp-for="Username" type="text" class="form-control max-length">
+                            }
+                            else
+                            {
+                                <input asp-for="Username" type="text" class="form-control" readonly style="cursor: not-allowed">
+                            }
+                        </div>
+                        <span asp-validation-for="Username" class="text-danger"></span>
+                    </fieldset>
+                </div>
+                <div class="col-lg-6">
+                    <fieldset class="mb-2">
+                        <label asp-for="FirstName" class="form-label fw-bold">ชื่อจริง <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text text-muted">
+                                <i class="fa-solid fa-pencil"></i>
+                            </span>
+                            <input asp-for="FirstName" type="text" class="form-control max-length">
+                        </div>
+                        <span asp-validation-for="FirstName" class="text-danger"></span>
+                    </fieldset>
+                </div>
+                <div class="col-lg-6">
+                    <fieldset class="mb-2">
+                        <label asp-for="LastName" class="form-label fw-bold">นามสกุล</label>
+                        <div class="input-group">
+                            <span class="input-group-text text-muted">
+                                <i class="fa-solid fa-pencil"></i>
+                            </span>
+                            <input asp-for="LastName" type="text" class="form-control max-length">
+                        </div>
+                        <span asp-validation-for="LastName" class="text-danger"></span>
+                    </fieldset>
+                </div>
+                <div class="col-lg-6">
+                    <fieldset class="mb-2">
+                        <label asp-for="PhoneNumber" class="form-label fw-bold">
+                            เบอร์โทรศัพท์
+                            @if (Model.UserId == Guid.Empty)
+                            {
+                                <small class="text-muted fw-normal">(ใช้เบอร์โทรศัพท์เป็นรหัสผ่านเริ่มต้น)</small>
+                            }
+                            <span class="text-danger">*</span>
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text text-muted">
+                                <i class="fa-solid fa-phone"></i>
+                            </span>
+                            <input asp-for="PhoneNumber" class="form-control" data-mask="00-0000-0000">
+                        </div>
+                        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                    </fieldset>
+                </div>
+                <div class="col-lg-6">
+                    <fieldset class="mb-2">
+                        <label asp-for="ProfileImage" class="form-label fw-bold">
+                            รูปประจำตัว
+                            @if (Model.UserId == Guid.Empty)
+                            {
+                                <span class="text-danger">*</span>
+                            }
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text text-muted">
+                                <i class="fa-solid fa-image"></i>
+                            </span>
+                            @if (Model.UserId == Guid.Empty)
+                            {
+                                <input class="form-control" type="file" asp-for="ProfileImage" accept="image/*" data-val="true" data-val-required="กรุณาเลือกรูปประจำตัว" aria-describedby="ProfileImage-error" aria-invalid="true">
+                            }
+                            else
+                            {
+                                <input class="form-control" type="file" asp-for="ProfileImage" accept="image/*">
+                            }
+                        </div>
+                        <span asp-validation-for="ProfileImage" class="text-danger"></span>
+                    </fieldset>
+                </div>
+                <div class="col-lg-12">
+                    <fieldset class="mb-2">
+                        <label asp-for="RoleIds" class="form-label fw-bold">สิทธ์การใช้งาน <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text text-muted">
+                                <i class="fa-solid fa-user-tag"></i>
+                            </span>
+                            <select asp-for="RoleIds" asp-items="ViewBag.Roles" class="selectpicker form-control" data-live-search="true" multiple data-selected-text-format="count >
+                5" title="เลือกข้อมูล" data-size="10"></select>
+                        </div>
+                        <span asp-validation-for="RoleIds" class="text-danger"></span>
+                    </fieldset>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+@section Style
+    {
+    <link rel="stylesheet" href="~/lib/bootstrap-select/css/bootstrap-select.min.css" />
+    <link rel="stylesheet" href="~/lib/icheck/skins/flat/blue.min.css" />
+}
+
+    @section Script
+    {
+    <script src="~/lib/bootstrap-select/js/bootstrap-select.min.js"></script>
+    <script src="~/lib/bootstrap-select/js/i18n/defaults-th_TH.min.js"></script>
+    <script src="~/lib/icheck/icheck.js"></script>
+    <script src="~/lib/jquery-validation/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/lib/jquery-mask/jquery.mask.min.js"></script>
+    <script src="~/lib/bootstrap-maxlength/bootstrap-maxlength.min.js"></script>
+
+    <script type="text/javascript">
+        $('.max-length').maxlength();
+        $('.selectpicker').selectpicker();
+        $('input').iCheck({
+            checkboxClass: 'icheckbox_flat-blue',
+            radioClass: 'iradio_flat-blue'
+        });
+        function readIMG(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+
+                reader.onload = function(e) {
+                    $('#DisplayImage').attr('src', e.target.result);
+                }
+
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        $("#ProfileImage").change(function() {
+            readIMG(this);
+        });
+
+    </script>
+
+}

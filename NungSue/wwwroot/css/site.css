@@ -1,0 +1,88 @@
+﻿* {
+    font-family: 'Sarabun', sans-serif;
+}
+
+html {
+    position: relative;
+    min-height: 100%;
+}
+
+body {
+    margin-bottom: 60px;
+}
+
+div.dataTables_processing {
+    padding-top: 10px !important
+}
+
+textarea {
+    resize: none !important;
+}
+
+.bootstrap-select {
+    border: 1px solid #ced4da !important;
+}
+
+.dropdown-toggle::after {
+    content: none !important
+}
+
+.table.dataTable > tbody > tr.child span.dtr-title {
+    min-width: 110px !important
+}
+
+th {
+    text-align: center !important;
+    white-space: nowrap !important;
+}
+
+@media all and (min-width: 992px) {
+    .navbar .nav-item .dropdown-menu {
+        display: block;
+        opacity: 0;
+        visibility: hidden;
+        transition: .3s;
+        margin-top: 0;
+    }
+
+    .navbar .nav-item:hover .nav-link {
+        color: #fff;
+    }
+
+    .navbar .dropdown-menu.fade-down {
+        top: 80%;
+        transform: rotateX(-75deg);
+        transform-origin: 0% 0%;
+    }
+
+    .navbar .dropdown-menu.fade-up {
+        top: 180%;
+    }
+
+    .navbar .nav-item:hover .dropdown-menu {
+        transition: .3s;
+        opacity: 1;
+        visibility: visible;
+        top: 100%;
+        transform: rotateX(0deg);
+    }
+}
+
+.book-item {
+    min-height: 200px;
+    max-height: 200px;
+}
+
+    .book-item .book-description {
+        -webkit-line-clamp: 3;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .book-item .book-title {
+        -webkit-line-clamp: 2;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }

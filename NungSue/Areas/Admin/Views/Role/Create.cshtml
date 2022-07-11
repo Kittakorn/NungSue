@@ -1,0 +1,89 @@
+﻿@model RoleCreateViewModel
+
+<div class="box-typical box-typical-padding">
+    <h3 class="with-border">@(Model.RoleId!=Guid.Empty?"แก้ไขข้อมูลสิทธ์":"เพิ่มข้อมูลสิทธ์")</h3>
+    <form method="post">
+        <input asp-for="RoleId" hidden />
+        <div class="d-flex justify-content-between mb-4">
+            <a asp-action="Index" type="button" class="btn btn-secondary-outline mr-2"><i class="fa-solid fa-arrow-left"></i>&ensp;ย้อนกลับ</a>
+            <button type="submit" class="btn btn-success"><i class="fa-solid fa-floppy-disk"></i>&ensp;บันทึกข้อมูล</button>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-4 col-md-3 col-xl-2 form-label semibold">ชื่อตำแหน่ง <span class="text-danger">*</span></label>
+            <div class="col-sm-8 col-md-9 col-xl-10">
+                <div class="input-group mb-1">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">
+                            <i class="fa-solid fa-pencil"></i>
+                        </span>
+                    </div>
+                    <input asp-for="RoleName" class="form-control">
+                </div>
+                <span asp-validation-for="RoleName" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-4 col-md-3 col-xl-2 form-label semibold">สิทธ์การเข้าถึงข้อมูล <span class="text-danger">*</span></label>
+            <div class="col-sm-8 col-md-9 col-xl-10">
+                <div class="row">
+                    @for (var i = 0; i < Model!.RolePermissions.Count; i++)
+                    {
+                        <div class="col-2">
+                            <div class="checkbox-bird green text-center">
+                                <input type="checkbox" asp-for="RolePermissions[i].Selected" checked="@Model.RolePermissions[i].Selected" />
+                                <label for="@($"RolePermissions_{i}__Selected")"></label>
+                            </div>
+                        </div>
+                        <div class="col-5">
+                            <input asp-for="RolePermissions[i].Value" hidden />
+                            @Model!.RolePermissions[i].Value
+                        </div>
+                        <div class="col-5">
+                            <input asp-for="RolePermissions[i].Description" hidden />
+                            @Model!.RolePermissions[i].Description
+                        </div>
+                    }
+                </div>
+                <span asp-validation-for="RolePermissions" class="text-danger mt-1"></span>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Style
+{
+<link rel="stylesheet" href="~/lib/select2/css/select2.min.css" />
+}
+
+@section Script
+{
+<script src="~/lib/select2/js/select2.full.min.js"></script>
+<script src="~/lib/jquery-validation/jquery.validate.min.js"></script>
+<script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+<script src="~/lib/jquery-mask/jquery.mask.min.js"></script>
+
+<script type="text/javascript">
+
+    $(document).ready(function() {
+        $('#PhoneNumber').mask("00-0000-0000");
+    });
+
+    function readIMG(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+
+            reader.onload = function(e) {
+                $('#DisplayImage').attr('src', e.target.result);
+            }
+
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    $("#Picture").change(function(){
+        readIMG(this);
+    });
+
+</script>
+
+}

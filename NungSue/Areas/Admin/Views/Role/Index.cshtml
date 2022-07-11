@@ -1,0 +1,52 @@
+﻿@model List<RoleViewModel>
+
+<div class="box-typical box-typical-padding">
+    <h3 class="with-border">สิทธ์การใช้งาน</h3>
+    <div class="d-flex align-items-center justify-content-end mb-2">
+        <a class="btn btn-success" asp-action="Create"><i class="fa-solid fa-plus"></i>&ensp;เพิ่มข้อมูลสิทธ์</a>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th class="text-nowrap">ชื่อตำแหน่ง</th>
+                    <th class="text-nowrap">จำนวนพนักงาน</th>
+                    <th class="text-nowrap">จำนวนสิทธิ์</th>
+                    <th class="text-nowrap" width="1"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model!.Any())
+                {
+                    foreach (var item in Model!)
+                    {
+                        <tr>
+                            <td class="color-blue-grey-lighter text-nowrap">@item.Name</td>
+                            <td class="color-blue-grey-lighter text-nowrap">@item.UserCount</td>
+                            <td class="color-blue-grey-lighter text-nowrap">@item.PermissionCount</td>
+                            <td class="text-nowrap">
+                                <a asp-area="Admin" asp-action="Create" asp-route-roleId="@item.RoleId" class="btn btn-sm btn-default"><i class="fa-solid fa-pencil"></i></a>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td class="color-blue-grey-lighter text-nowrap text-center" colspan="8">ไม่พบข้อมูล</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Style
+{
+<link rel="stylesheet" href="~/lib/select2/css/select2.min.css" />
+}
+
+@section Script
+{
+<script src="~/lib/select2/js/select2.full.min.js"></script>
+}

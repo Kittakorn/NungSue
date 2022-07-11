@@ -1,0 +1,43 @@
+﻿@using NungSue.Constants
+
+@{
+    var name = "";
+    var IsAuthenticated = User.Identity.IsAuthenticated && User.Identity.AuthenticationType == AuthSchemes.CustomerAuth;
+    if (IsAuthenticated)
+    {
+        name = User.Identity.Name.Trim();
+        if (string.IsNullOrEmpty(name))
+            name = User.FindFirst("Email").Value;
+    }
+}
+
+@if (IsAuthenticated)
+{
+    <li class="nav-item me-2">
+        <a class="nav-link text-dark" asp-area="Admin" asp-controller="Book" asp-action="">
+            <span class="fa-layers fa-fw fa-lg">
+                <i class="fa-solid fa-cart-shopping text-muted"></i>
+                <span class="fa-layers-counter fs-2">4</span>
+            </span>&ensp;ตะกร้าสินค้า
+        </a>
+    </li>
+    <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle text-dark" href="#" id="navbarDropdownUser" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fa-solid fa-user text-muted"></i>&ensp;@name
+        </a>
+        <ul class="dropdown-menu" aria-labelledby="navbarDropdownUser">
+            <li><a class="dropdown-item" href="#">ข้อมูลส่วนตัว</a></li>
+            <li><a class="dropdown-item" href="#">รายการโปรด</a></li>
+            <li><a class="dropdown-item" href="#">รายการสั่งซื้อ</a></li>
+            <li><a class="dropdown-item" asp-controller="Account" asp-action="SignOut">ออกจากระบบ</a></li>
+        </ul>
+    </li>
+}
+else
+{
+    <li class="nav-item">
+        <a class="nav-link text-dark" asp-area="Admin" asp-controller="Book" asp-action="">
+            <i class="fa-solid fa-arrow-right-to-bracket text-muted"></i>&ensp;เข้าสู่ระบบ
+        </a>
+    </li>
+}

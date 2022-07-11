@@ -1,0 +1,69 @@
+﻿@using NungSue.Entities
+@using Microsoft.Extensions.Caching.Memory
+
+@inject IMemoryCache MemoryCache
+@inject BookStoreContext Context
+
+@{
+    if (!MemoryCache.TryGetValue("Categories", out List<string> Categorys))
+    {
+        Categorys = Context.Categories.Select(x => x.Name).ToList();
+        MemoryCache.Set("Categories", Categorys);
+    }
+
+    if (!MemoryCache.TryGetValue("Tags", out List<string> Tags))
+    {
+        Tags = Context.Tags.OrderBy(x => x.Name).Select(x => x.Name).ToList();
+        MemoryCache.Set("Tags", Tags);
+    }
+}
+
+<header>
+    <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white shadow mb-3">
+        <div class="container">
+            <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">ร้านขายหนังสือ</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                <ul class="navbar-nav flex-grow-1">
+                    <li class="nav-item me-2">
+                        <a class="nav-link text-dark" asp-area="Admin" asp-controller="Book" asp-action="">
+                            <i class="fa-solid fa-home text-muted "></i>&ensp;หน้าหลัก
+                        </a>
+                    </li>
+                    <li class="nav-item me-2">
+                        <a class="nav-link text-dark" asp-area="Admin" asp-controller="Book" asp-action="">
+                            <i class="fa-solid fa-star text-muted"></i>&ensp;หนังสือขายดี
+                        </a>
+                    </li>
+                    <li class="nav-item dropdown me-2">
+                        <a class="nav-link dropdown-toggle text-dark" href="#" id="navbarDropdownCategry" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fa-solid fa-list text-muted"></i>&ensp;หมวดหมู่
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdownCategry" style="max-height:330px;overflow-x: hidden;overflow-y: scroll;">
+                            @foreach (var item in Categorys)
+                            {
+                                <li><a class="dropdown-item" href="/category/@item.Replace(" ","-")">@item</a></li>
+                            }
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown me-2">
+                        <a class="nav-link dropdown-toggle text-dark" href="#" id="navbarDropdownTag" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fa-solid fa-tags text-muted"></i>&ensp;แท็ก
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdownTag" style="max-height:330px;overflow-x: hidden;overflow-y: scroll;">
+                            @foreach (var item in Tags)
+                            {
+                                <li><a class="dropdown-item" href="/tag/@item.Replace(" ","-")">@item</a></li>
+                            }
+                        </ul>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    <partial name="_Authen" />
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>

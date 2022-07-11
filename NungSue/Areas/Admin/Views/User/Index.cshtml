@@ -1,0 +1,77 @@
+﻿<div class="d-flex justify-content-between">
+    <h3>พนักงาน</h3>
+    <div class="d-flex align-items-center">
+        <a class="btn btn-success" asp-action="Create"><i class="fa-solid fa-plus"></i>&ensp;เพิ่มข้อมูลพนักงาน</a>
+    </div>
+</div>
+<hr />
+<table id="table" class="table table-striped table-bordered" width="100%">
+    <thead>
+        <tr>
+            <th class="all">ชื่อผู้ใช้งาน</th>
+            <th >ชื่อ - นามสกุล</th>
+            <th >เบอร์โทรศัพท์</th>
+            <th >วันที่เพิ่มข้อมูล</th>
+            <th >เข้าสู่ล่าสุด</th>
+            <th  width="1">สถานะ</th>
+            <th >สิทธ์การใช้งาน</th>
+            <th width="1" class="all"></th>
+        </tr>
+    </thead>
+</table>
+
+@section Style {
+    <link rel="stylesheet" href="~/lib/datatables-net/datatables.min.css">
+}
+
+    @section Script {
+    <script src="~/lib/datatables-net/datatables.min.js"></script>
+
+    <script>
+        $(function() {
+            $('#table').DataTable({
+                responsive: true,
+                language: {
+                    url: "//cdn.datatables.net/plug-ins/1.12.1/i18n/th.json"
+                },
+                processing: true,
+                serverSide: true,
+                filter: true,
+                ajax: {
+                    url: "User/GetUsers",
+                    type: "POST",
+                    datatype: "json"
+                },
+                columnDefs: [
+                    { targets: [6, 7], orderable: false }
+                ],
+                order: [],
+                createdRow: function(row, data, index) {
+                    $(row).addClass('text-nowrap')
+                },
+                columns: [
+                    { data: "username", name: "Username" },
+                    { data: "fullName", name: "FirstName" },
+                    { data: "phoneNumber", name: "PhoneNumber" },
+                    { data: "createDate", name: "CreateDate" },
+                    { data: "lastLogin", name: "LastLogin" },
+                    {
+                        data: "isActive", name: "IsActive",
+                        render: function(data, row) {
+                            if (data === true) return '<span class="text-success">ใช้งาน</span>';
+                            return '<span class="text-danger">ไม่ได้ใช้งาน</span>';
+                        }
+                    },
+                    { data: "roles", name: "Roles" },
+                    {
+                        data: "userId",
+                        class: "p-1",
+                        render: function(data, row) {
+                            return `<a class="btn btn-secondary btn-sm" href="User/Edit/${data}"><i class="fa-solid fa-pencil"></i>&ensp;แก้ไข</a>`;
+                        }
+                    }
+                ]
+            });
+        });
+    </script>
+}

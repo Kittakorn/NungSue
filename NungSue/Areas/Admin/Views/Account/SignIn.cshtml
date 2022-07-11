@@ -1,0 +1,31 @@
+﻿@model SignInViewModel
+
+@{
+    Layout = "_LayoutAuthen";
+}
+
+<div class="page-center">
+    <div class="page-center-in">
+        <div class="container-fluid">
+            <form asp-action="SignIn" class="sign-box" asp-route-returnUrl="@ViewBag.ReturnUrl">
+                <div class="sign-avatar">
+                    <img src="~/img/sign-in.svg" alt="">
+                </div>
+                <header class="sign-title">ลงชื่อเข้าใช้งาน</header>
+                <div class="form-group">
+                    <input asp-for="Username" type="text" class="form-control" placeholder="ชื่อผู้ใช้งาน" />
+                </div>
+                <div class="form-group">
+                    <input asp-for="Password" type="password" class="form-control" placeholder="รหัสผ่าน" />
+                </div>
+                <div class="form-group">
+                    <div class="checkbox">
+                        <input asp-for="RememberMe" type="checkbox" />
+                        <label for="RememberMe">ให้ฉันอยู่ในระบบต่อไป</label>
+                    </div>
+                </div>
+                <button type="submit" class="btn">เข้าสู่ระบบ</button>
+            </form>
+        </div>
+    </div>
+</div>
