@@ -20,7 +20,7 @@
             <i class="fa-solid fa-user text-muted"></i>&ensp;@(IsAuthenticated?User.Identity.Name.Trim():null)
         </a>
         <ul class="dropdown-menu" aria-labelledby="navbarDropdownUser">
-            <li><a class="dropdown-item" href="#">ข้อมูลส่วนตัว</a></li>
+            <li><a class="dropdown-item" asp-controller="Customer" asp-action="Profile">ข้อมูลส่วนตัว</a></li>
             <li><a class="dropdown-item" href="#">รายการโปรด</a></li>
             <li><a class="dropdown-item" href="#">รายการสั่งซื้อ</a></li>
             <li><a class="dropdown-item" asp-controller="Account" asp-action="SignOut">ออกจากระบบ</a></li>

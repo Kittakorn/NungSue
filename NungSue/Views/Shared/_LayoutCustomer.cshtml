@@ -17,7 +17,15 @@
     <partial name="_Navbar" />
     <div class="container">
         <main role="main" class="pb-3">
-            @RenderBody()
+            <div class="row">
+                <div class="col-lg-3">
+                    <partial name="_Menu"/>
+                </div>
+                <div class="col-lg-9">
+                    @RenderBody()
+
+                </div>
+            </div>
         </main>
     </div>
 
@@ -25,7 +33,7 @@
     <script src="~/lib/jquery/jquery.min.js"></script>
     <script src="~/lib/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
-    
+
     @await Component.InvokeAsync("Notyf")
     @await RenderSectionAsync("Script",false)
 

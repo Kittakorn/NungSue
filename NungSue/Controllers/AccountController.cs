@@ -12,7 +12,6 @@ using System.Security.Claims;
 
 namespace NungSue.Controllers
 {
-    [IsAuthorize]
     [Route("account")]
     public class AccountController : Controller
     {
@@ -27,6 +26,7 @@ namespace NungSue.Controllers
             _blobService = blobService;
         }
 
+        [IsAuthorize]
         [Route("sign-in")]
         public IActionResult SignIn(string returnUrl)
         {
@@ -35,6 +35,7 @@ namespace NungSue.Controllers
         }
 
         [HttpPost]
+        [IsAuthorize]
         [Route("sign-in")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> SignIn(string returnUrl, SignInViewModel model)
@@ -51,8 +52,16 @@ namespace NungSue.Controllers
                 return View(model);
             }
 
-            var passwordIsMatch = BCrypt.Net.BCrypt.Verify(model.Password, customer.Password);
-            if (!passwordIsMatch)
+            if (customer.Password != null)
+            {
+                var passwordIsMatch = BCrypt.Net.BCrypt.Verify(model.Password, customer.Password);
+                if (!passwordIsMatch)
+                {
+                    ModelState.AddModelError("Password", "รหัสผ่านไม่ถูกต้อง กรุณาตรวจสอบอีกครั้ง");
+                    return View(model);
+                }
+            }
+            else
             {
                 ModelState.AddModelError("Password", "รหัสผ่านไม่ถูกต้อง กรุณาตรวจสอบอีกครั้ง");
                 return View(model);
@@ -68,6 +77,7 @@ namespace NungSue.Controllers
             return RedirectToLocal(returnUrl);
         }
 
+        [IsAuthorize]
         [Route("register")]
         public IActionResult Register()
         {
@@ -75,6 +85,7 @@ namespace NungSue.Controllers
         }
 
         [HttpPost]
+        [IsAuthorize]
         [Route("register")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterViewModel model)
@@ -107,7 +118,7 @@ namespace NungSue.Controllers
             return RedirectToAction("SignIn");
         }
 
-
+        [IsAuthorize]
         [HttpPost(nameof(ExternalLogin))]
         public IActionResult ExternalLogin(string provider, string returnUrl = null)
         {
@@ -116,6 +127,7 @@ namespace NungSue.Controllers
             return Challenge(properties, provider);
         }
 
+        [IsAuthorize]
         [HttpGet(nameof(ExternalLoginCallback))]
         public async Task<IActionResult> ExternalLoginCallback(string returnUrl = null)
         {
@@ -141,6 +153,7 @@ namespace NungSue.Controllers
             return RedirectToLocal(returnUrl);
         }
 
+        [IsAuthorize]
         [Route("account/confirm")]
         public async Task<IActionResult> ExternalLoginConfirm()
         {
@@ -153,6 +166,7 @@ namespace NungSue.Controllers
         }
 
         [HttpPost]
+        [IsAuthorize]
         [Route("account/confirm")]
         public async Task<IActionResult> ExternalLoginConfirm(RegisterConfirmViewModel model, string returnUrl = null)
         {
@@ -165,7 +179,7 @@ namespace NungSue.Controllers
             var providerKey = info.Principal.FindFirstValue(ClaimTypes.NameIdentifier);
             var firstName = info.Principal.FindFirstValue(ClaimTypes.GivenName);
             var lastName = info.Principal.FindFirstValue(ClaimTypes.Surname);
-            
+
             string profileImage = null;
             if (providerName == "Facebook")
                 profileImage = $"https://graph.facebook.com/{providerKey}/picture?type=large";
@@ -222,7 +236,6 @@ namespace NungSue.Controllers
             await HttpContext.SignOutAsync(AuthSchemes.ExternalAuth);
             await HttpContext.SignInAsync(AuthSchemes.CustomerAuth, claimsPrincipal, authProperties);
         }
-
 
         #region Helper
         private IActionResult RedirectToLocal(string returnUrl)
