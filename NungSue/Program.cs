@@ -1,5 +1,7 @@
 using AspNetCoreHero.ToastNotification.Extensions;
+using FluentValidation.AspNetCore;
 using NungSue.Extensions;
+using NungSue.Validators;
 using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,7 +12,10 @@ builder.Services.ConfigAuthentication(builder.Configuration);
 builder.Services.ConfigNotify();
 builder.Services.AddMemoryCache();
 
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews().AddFluentValidation(options =>
+{
+    options.RegisterValidatorsFromAssemblyContaining<SetPasswordValidator>();
+}); 
 
 var app = builder.Build();
 

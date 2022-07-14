@@ -29,7 +29,7 @@
 
                                 </div>
                                 <div class="flex-shrink-1">
-                                    <button type="button" onclick="UpdateFavorite(this)" value="@item.BookId" class="fa-solid fa-heart @(item.IsFavorite?"text-danger":"text-muted") fa-lg pb-3 position-absolute top-0 end-0 me-3 pt-3"></button>
+                                    <button type="button" onclick="UpdateFavorite(this,false)" value="@item.BookId" class="fa-solid fa-heart @(item.IsFavorite?"text-danger":"text-muted") fa-lg pb-3 position-absolute top-0 end-0 me-3 pt-3"></button>
                                     <div class="position-absolute end-0 bottom-0 me-3 pb-3">
                                         @if (item.PromotionPrice == null)
                                         {

@@ -1,10 +1,43 @@
-﻿<div class="list-group">
-  <button type="button" class="list-group-item list-group-item-action active" aria-current="true">
-    ข้อมูลส่วนตัว
-  </button>
-  <button type="button" class="list-group-item list-group-item-action">รายการสั่งซื้อ</button>
-  <button type="button" class="list-group-item list-group-item-action">รายการโปรด</button>
-  <button type="button" class="list-group-item list-group-item-action">ประวัติการเข้าชม</button>
-  <button type="button" class="list-group-item list-group-item-action">ตั้งรหัสผ่าน</button>
-  <button type="button" class="list-group-item list-group-item-action">ออกจากระบบ</button>
+﻿@using System.Security.Claims
+@using NungSue.Entities
+
+@inject NungSueContext Context
+
+@{
+    var userProfile = User.FindFirstValue(ClaimTypes.Actor);
+    var customerId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+    var customer = Context.Customers.Find(customerId);
+}
+
+<div class="list-group shadow-lg">
+    <div class="list-group-item text-center py-4">
+        <img src="@userProfile" class="rounded-circle" width="150" height="150">
+    </div>
+    <a asp-controller="User" asp-action="Profile" class="list-group-item list-group-item-action">
+        <i class="fa-solid fa-user fa-lg w-25" style="color:#1E88E5"></i>ข้อมูลของฉัน
+    </a>
+    @if (customer.Password == null)
+    {
+        <a asp-controller="User" asp-action="SetPassword" class="list-group-item list-group-item-action">
+            <i class="fa-solid fa-key fa-lg w-25" style="color:#43A047"></i>ตั้งรหัสผ่าน
+        </a>
+    }
+    else
+    {
+        <a asp-controller="User" asp-action="ChangePassword" class="list-group-item list-group-item-action">
+            <i class="fa-solid fa-key fa-lg w-25" style="color:#43A047"></i>เปลี่ยนรหัสผ่าน
+        </a>
+    }
+    <button type="button" class="list-group-item list-group-item-action">
+        <i class="fa-solid fa-location-dot fa-lg w-25" style="color:#17A589"></i>ที่อยู่
+    </button>
+    <button type="button" class="list-group-item list-group-item-action">
+        <i class="fa-solid fa-clipboard-list fa-lg w-25" style="color:#F39C12"></i>รายการสั่งซื้อ
+    </button>
+    <a asp-controller="User" asp-action="Favorite" class="list-group-item list-group-item-action">
+        <i class="fa-solid fa-heart fa-lg w-25" style="color:#E53935"></i>รายการโปรด
+    </a>
+    <button type="button" class="list-group-item list-group-item-action">
+        <i class="fa-solid fa-clock-rotate-left fa-lg w-25" style="color:#757575"></i>ประวัติการเข้าชม
+    </button>
 </div>

@@ -18,12 +18,14 @@ namespace NungSue.Controllers
         private readonly NungSueContext _context;
         private readonly INotyfService _notify;
         private readonly IBlobService _blobService;
+        private readonly IConfiguration _config;
 
-        public AccountController(NungSueContext context, INotyfService notify, IBlobService blobService)
+        public AccountController(NungSueContext context, INotyfService notify, IBlobService blobService, IConfiguration config)
         {
             _context = context;
             _notify = notify;
             _blobService = blobService;
+            _config = config;
         }
 
         [IsAuthorize]
@@ -223,12 +225,19 @@ namespace NungSue.Controllers
             if (string.IsNullOrEmpty(fullName))
                 fullName = info.Email;
 
+            var profileImage = info.ProfileImage;
+            if (profileImage != null)
+            {
+                profileImage = _config.GetValue<string>("ImageUrl") + profileImage;
+            }
+
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Email, info.Email),
                 new Claim(ClaimTypes.NameIdentifier,info.CustomerId.ToString()),
-                new Claim(ClaimTypes.Name,fullName)
-            };
+                new Claim(ClaimTypes.Name,fullName),
+                new Claim(ClaimTypes.Actor,profileImage)
+        };
 
             var authProperties = new AuthenticationProperties { IsPersistent = isRemember };
             var claimsIdentity = new ClaimsIdentity(claims, AuthSchemes.CustomerAuth);

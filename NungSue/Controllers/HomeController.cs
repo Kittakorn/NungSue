@@ -80,16 +80,27 @@ public class HomeController : Controller
         return View(data);
     }
 
-
-    [Route("order")]
-    public async Task<IActionResult> Order()
+    [Route("like/{bookId:guid}")]
+    public async Task<JsonResult> LikeBook(Guid bookId)
     {
-        return View();
-    }
+        var customerId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+        var favorite = await _context.Favorites.FirstOrDefaultAsync(x => x.CustomerId == customerId && x.BookId == bookId);
 
-    [Route("cart/{bookId:guid}")]
-    public async Task<IActionResult> AddBookToCart(Guid bookId)
-    {
-        return View();
+        if (favorite == null)
+        {
+            var newFavorite = new Favorite
+            {
+                BookId = bookId,
+                CustomerId = customerId
+            };
+            await _context.Favorites.AddAsync(newFavorite);
+        }
+        else
+        {
+            _context.Favorites.Remove(favorite);
+        }
+
+        await _context.SaveChangesAsync();
+        return Json(favorite == null);
     }
 }

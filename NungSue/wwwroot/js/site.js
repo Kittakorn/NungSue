@@ -1,15 +1,15 @@
-﻿function UpdateFavorite(e) {
+﻿function UpdateFavorite(e, remove) {
     var bookId = $(e).attr("value");
     var request = $.ajax({
         type: 'GET',
-        url: '/customer/favorite/' + bookId,
+        url: '/like/' + bookId,
         dataType: "json"
     });
 
     request.done(
         function (response) {
-            if (response == true) {
-                $(e).removeClass('text-muted').addClass('text-danger');
+            if (response) {
+                 $(e).removeClass('text-muted').addClass('text-danger');
                 var notyf = new Notyf();
                 notyf.success({
                     message: 'เพิ่มหนังสือในรายการโปรดแล้ว',
@@ -17,7 +17,8 @@
                 })
             }
             else {
-                $(e).removeClass('text-danger').addClass('text-muted');
+                if (remove) $('#' + bookId).remove();
+                else $(e).removeClass('text-danger').addClass('text-muted');
             }
         }
     );
