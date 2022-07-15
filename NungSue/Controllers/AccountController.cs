@@ -227,9 +227,9 @@ namespace NungSue.Controllers
 
             var profileImage = info.ProfileImage;
             if (profileImage != null)
-            {
                 profileImage = _config.GetValue<string>("ImageUrl") + profileImage;
-            }
+            else
+                profileImage = "";
 
             var claims = new List<Claim>
             {
@@ -237,7 +237,7 @@ namespace NungSue.Controllers
                 new Claim(ClaimTypes.NameIdentifier,info.CustomerId.ToString()),
                 new Claim(ClaimTypes.Name,fullName),
                 new Claim(ClaimTypes.Actor,profileImage)
-        };
+            };
 
             var authProperties = new AuthenticationProperties { IsPersistent = isRemember };
             var claimsIdentity = new ClaimsIdentity(claims, AuthSchemes.CustomerAuth);

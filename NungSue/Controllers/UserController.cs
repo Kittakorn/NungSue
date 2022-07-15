@@ -34,9 +34,120 @@ public class UserController : Controller
     }
 
     [Route("address")]
-    public IActionResult Address()
+    public async Task<IActionResult> Address()
     {
-        return View();
+        var customer = await GetCustomer();
+        var address = await _context.CustomerAddresses
+            .Where(x => x.CustomerId == customer.CustomerId)
+            .Select(x => new AddressViewModel
+            {
+                AddressId = x.AddressId,
+                FullName = $"{x.FirstName} {x.LastName}",
+                PhoneNumber = x.PhoneNumber,
+                IsDefault = x.IsDefault,
+                FullAddress = $"{x.Address} ตำบล{x.District} อำเภอ{x.SubDistrict} จังหวัด{x.Province} {x.ZipCode}"
+            })
+            .ToListAsync();
+
+        return View(address);
+    }
+
+    [Route("address/create")]
+    [Route("address/update/{line:int}")]
+    public async Task<IActionResult> AddressCreateOrUpdate(int? line)
+    {
+
+
+        var customer = await GetCustomer();
+        var customerAddress = await _context.CustomerAddresses.Where(x => x.CustomerId == customer.CustomerId).ToListAsync();
+
+        if (!line.HasValue)
+        {
+            return View(new AddressCreateViewModel
+            {
+                IsDefault = customerAddress.Count == 0,
+                HasAddress = customerAddress.Count != 0
+            });
+        }
+
+        if (line.Value > customerAddress.Count)
+            return NotFound();
+
+        var address = customerAddress[line.Value];
+
+        var viewModel = new AddressCreateViewModel
+        {
+            AddressId = address.AddressId,
+            FirstName = address.FirstName,
+            LastName = address.LastName,
+            PhoneNumber = address.PhoneNumber,
+            Address = address.Address,
+            District = address.District,
+            SubDistrict = address.SubDistrict,
+            Province = address.Province,
+            ZipCode = address.ZipCode,
+            HasAddress = true,
+            IsDefault = false
+        };
+
+        return View(viewModel);
+    }
+
+    [HttpPost]
+    [Route("address/create")]
+    [Route("address/update/{line:int}")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> AddressCreateOrUpdate(AddressCreateViewModel model)
+    {
+        if (!ModelState.IsValid)
+            return View(model);
+
+        var address = new CustomerAddress();
+        var customer = await GetCustomer();
+
+        if (model.AddressId != null)
+        {
+            address = await _context.CustomerAddresses.FindAsync(model.AddressId);
+            var defaultAddress = await _context.CustomerAddresses.FirstOrDefaultAsync(x => x.IsDefault && x.CustomerId == customer.CustomerId && x.AddressId != address.AddressId);
+
+            if (model.IsDefault && defaultAddress != null)
+            {
+                defaultAddress.IsDefault = false;
+                _context.CustomerAddresses.Update(defaultAddress);
+            }
+            else
+            {
+                address.IsDefault = model.IsDefault;
+            }
+        }
+        else
+        {
+            var hasAddress = await _context.CustomerAddresses.CountAsync(x => x.CustomerId == customer.CustomerId);
+            if (hasAddress == 0)
+                address.IsDefault = true;
+            else
+                address.IsDefault = model.IsDefault;
+        }
+
+        address.FirstName = model.FirstName;
+        address.LastName = model.LastName;
+        address.PhoneNumber = model.PhoneNumber.Replace("-", "");
+        address.Address = model.Address;
+        address.District = model.District;
+        address.SubDistrict = model.SubDistrict;
+        address.Province = model.Province;
+        address.ZipCode = model.ZipCode;
+        address.CustomerId = customer.CustomerId;
+
+        if (model.AddressId != Guid.Empty)
+            _context.CustomerAddresses.Update(address);
+        else
+            _context.CustomerAddresses.Add(address);
+
+        await _context.SaveChangesAsync();
+        _notify.Success("เพิ่มที่อยู่สำเร็จ");
+
+        return RedirectToAction("Address");
     }
 
     [Route("purchase")]
@@ -56,9 +167,9 @@ public class UserController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model)
     {
-        if (!ModelState.IsValid) 
+        if (!ModelState.IsValid)
             return View(model);
-        
+
         var customer = await GetCustomer();
 
         var passwordIsMatch = BCrypt.Net.BCrypt.Verify(model.OldPassword, customer.Password);
@@ -82,9 +193,9 @@ public class UserController : Controller
     {
         var customer = await GetCustomer();
 
-        if (customer.Password != null) 
+        if (customer.Password != null)
             return RedirectToAction("ChangePassword");
-        
+
         return View();
     }
 

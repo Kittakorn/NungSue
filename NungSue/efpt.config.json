@@ -50,6 +50,10 @@
          "ObjectType": 0
       },
       {
+         "Name": "[dbo].[History]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[dbo].[Order]",
          "ObjectType": 0
       },

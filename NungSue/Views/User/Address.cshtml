@@ -1,0 +1,11 @@
+﻿@model List<AddressViewModel>
+
+@{
+    ViewData["Title"] = "ที่อยู่ของฉัน";
+    Layout = "_LayoutUser";
+}
+<div class="d-flex justify-content-between align-items-center mb-1">
+    <h4>ที่อยู่ของฉัน</h4>
+    <a class="btn btn-success btn-sm" asp-action="AddressCreateOrUpdate"><i class="fa-solid fa-plus"></i>&ensp;เพิ่มที่อยู่</a>
+</div>
+<hr class="mt-1"/>

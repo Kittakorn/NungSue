@@ -1,0 +1,161 @@
+﻿@model AddressCreateViewModel
+
+@{
+    ViewData["Title"] = "เพิ่มที่อยู่";
+    Layout = "_LayoutUser";
+}
+<form method="post" autocomplete="off">
+    <div class="d-flex justify-content-between align-items-center mb-1">
+        <h4>เพิ่มที่อยู่</h4>
+        <div class="d-flex align-items-end">
+            <div class="me-4">
+                <div class="form-check">
+                    @if (Model.HasAddress)
+                    {
+                        <input class="form-check-input" asp-for="IsDefault" type="checkbox">
+                    }
+                    else
+                    {
+                        <input class="form-check-input" asp-for="IsDefault" type="checkbox" disabled>
+                    }
+                    <label class="form-check-label ms-2" asp-for="IsDefault">
+                        ตั้งเป็นค่าเริ่มต้น
+                    </label>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary btn-sm"><i class="fa-solid fa-floppy-disk"></i>&ensp;บันทึกข้อมูล</button>
+        </div>
+    </div>
+    <hr class="mt-1" />
+    <div class="row">
+        <div class="col-lg-5">
+            <fieldset class="mb-2">
+                <label asp-for="FirstName" class="form-label fw-bold">ชื่อ <span class="text-danger">*</span></label>
+                <div class="input-group">
+                    <span class="input-group-text text-muted">
+                        <i class="fa-solid fa-pencil"></i>
+                    </span>
+                    <input asp-for="FirstName" type="text" class="form-control max-length" maxlength="50">
+                </div>
+                <span asp-validation-for="FirstName" class="text-danger"></span>
+            </fieldset>
+        </div>
+        <div class="col-lg-4">
+            <fieldset class="mb-2">
+                <label asp-for="LastName" class="form-label fw-bold">นามสกุล</label>
+                <div class="input-group">
+                    <span class="input-group-text text-muted">
+                        <i class="fa-solid fa-pencil"></i>
+                    </span>
+                    <input asp-for="LastName" type="text" class="form-control max-length" maxlength="50">
+                </div>
+                <span asp-validation-for="LastName" class="text-danger"></span>
+            </fieldset>
+        </div>
+        <div class="col-lg-3">
+            <fieldset class="mb-2">
+                <label asp-for="PhoneNumber" class="form-label fw-bold">เบอร์โทรศัพท์ <span class="text-danger">*</span></label>
+                <div class="input-group">
+                    <span class="input-group-text text-muted">
+                        <i class="fa-solid fa-phone"></i>
+                    </span>
+                    <input asp-for="PhoneNumber" type="text" class="form-control" maxlength="12" data-mask="00-0000-0000">
+                </div>
+                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+            </fieldset>
+        </div>
+        <div class="col-lg-12">
+            <fieldset class="mb-2">
+                <label asp-for="Address" class="form-label fw-bold">ที่อยู่ <span class="text-danger">*</span></label>
+                <div class="input-group">
+                    <span class="input-group-text text-muted">
+                        <i class="fa-solid fa-location-dot"></i>
+                    </span>
+                    <input asp-for="Address" type="text" class="form-control" maxlength="250">
+                </div>
+                <span asp-validation-for="Address" class="text-danger"></span>
+            </fieldset>
+        </div>
+        <div class="col-lg-12">
+            <fieldset class="mb-2">
+                <label ffor="search" class="form-label fw-bold">ค้นหาที่อยู่</label>
+                <input id="search" type="text" class="form-control" maxlength="250">
+            </fieldset>
+        </div>
+        <div class="col-lg-6">
+            <fieldset class="mb-2">
+                <label asp-for="SubDistrict" class="form-label fw-bold">ตำบล <span class="text-danger">*</span></label>
+                <input asp-for="SubDistrict" type="text" class="form-control" maxlength="50" readonly>
+                <span asp-validation-for="SubDistrict" class="text-danger"></span>
+            </fieldset>
+        </div>
+        <div class="col-lg-6">
+            <fieldset class="mb-2">
+                <label asp-for="District" class="form-label fw-bold">อำเภอ <span class="text-danger">*</span></label>
+                <input asp-for="District" type="text" class="form-control" maxlength="50" readonly>
+                <span asp-validation-for="District" class="text-danger"></span>
+            </fieldset>
+        </div>
+        <div class="col-lg-6">
+            <fieldset class="mb-2">
+                <label asp-for="Province" class="form-label fw-bold">จังหวัด <span class="text-danger">*</span></label>
+                <input asp-for="Province" type="text" class="form-control" maxlength="50" readonly>
+                <span asp-validation-for="Province" class="text-danger"></span>
+            </fieldset>
+        </div>
+        <div class="col-lg-6">
+            <fieldset class="mb-2">
+                <label asp-for="ZipCode" class="form-label fw-bold">รหัสไปรษณี <span class="text-danger">*</span></label>
+                <input asp-for="ZipCode" type="text" class="form-control" maxlength="50" data-mask="00000" readonly>
+                <span asp-validation-for="ZipCode" class="text-danger"></span>
+            </fieldset>
+        </div>
+    </div>
+
+</form>
+
+
+@section Style
+    {
+    <link rel="stylesheet" href="~/lib/icheck/skins/flat/blue.min.css" />
+    <link rel="stylesheet" href="https://earthchie.github.io/jquery.Thailand.js/jquery.Thailand.js/dist/jquery.Thailand.min.css">
+}
+
+    @section Script
+    {
+
+    <script type="text/javascript" src="https://earthchie.github.io/jquery.Thailand.js/jquery.Thailand.js/dependencies/JQL.min.js"></script>
+    <script type="text/javascript" src="https://earthchie.github.io/jquery.Thailand.js/jquery.Thailand.js/dependencies/typeahead.bundle.js"></script>
+    <script type="text/javascript" src="https://earthchie.github.io/jquery.Thailand.js/jquery.Thailand.js/dist/jquery.Thailand.min.js"></script>
+    <script src="~/lib/icheck/icheck.js"></script>
+    <script src="~/lib/jquery-validation/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/lib/jquery-mask/jquery.mask.min.js"></script>
+    <script src="~/lib/bootstrap-maxlength/bootstrap-maxlength.min.js"></script>
+    <script src="~/lib/jquery-mask/jquery.mask.min.js"></script>
+
+    <script type="text/javascript">
+        $('.max-length').maxlength();
+        $('input').iCheck({
+            checkboxClass: 'icheckbox_flat-blue',
+            radioClass: 'iradio_flat-blue'
+        });
+
+        $.Thailand({
+            autocomplete_size: 10,
+            $search: $('#search'),
+            onDataFill: function(data) {
+                $("#SubDistrict").val(data.district);
+                $("#District").val(data.amphoe);
+                $("#Province").val(data.province);
+                $("#ZipCode").val(data.zipcode);
+
+                $("[data-valmsg-for=SubDistrict]").remove();
+                $("[data-valmsg-for=District]").remove();
+                $("[data-valmsg-for=Province]").remove();
+                $("[data-valmsg-for=ZipCode]").remove();
+            }
+        });
+    </script>
+
+}

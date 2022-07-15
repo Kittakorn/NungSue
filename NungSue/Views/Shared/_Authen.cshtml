@@ -3,6 +3,7 @@
 
 @{
     var IsAuthenticated = User.Identity.IsAuthenticated && User.Identity.AuthenticationType == AuthSchemes.CustomerAuth;
+    var userProfile = User.FindFirstValue(ClaimTypes.Actor);
 }
 
 @if (IsAuthenticated)
@@ -17,7 +18,16 @@
     </li>
     <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle text-dark" href="#" id="navbarDropdownUser" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            <i class="fa-solid fa-user text-muted"></i>&ensp;@(IsAuthenticated?User.Identity.Name.Trim():null)
+            @if (!string.IsNullOrEmpty(userProfile))
+            {
+                <img src="@userProfile" width="25" height="25" class="rounded-circle me-2" />
+                @User.Identity.Name.Trim()
+            }
+            else
+            {
+                <img src="~/img/avatar-sign.png" width="25" height="25" class="rounded-circle me-2" />
+                @User.Identity.Name.Trim()
+            }
         </a>
         <ul class="dropdown-menu" aria-labelledby="navbarDropdownUser">
             <li><a class="dropdown-item" asp-controller="User" asp-action="Profile">ข้อมูลของฉัน</a></li>

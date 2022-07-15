@@ -12,6 +12,7 @@ namespace NungSue.Entities
             BookAuthors = new HashSet<BookAuthor>();
             BookTags = new HashSet<BookTag>();
             Favorites = new HashSet<Favorite>();
+            Histories = new HashSet<History>();
             OrderDetails = new HashSet<OrderDetail>();
             ShoppingCarts = new HashSet<ShoppingCart>();
         }
@@ -45,6 +46,7 @@ namespace NungSue.Entities
         public virtual ICollection<BookAuthor> BookAuthors { get; set; }
         public virtual ICollection<BookTag> BookTags { get; set; }
         public virtual ICollection<Favorite> Favorites { get; set; }
+        public virtual ICollection<History> Histories { get; set; }
         public virtual ICollection<OrderDetail> OrderDetails { get; set; }
         public virtual ICollection<ShoppingCart> ShoppingCarts { get; set; }
     }

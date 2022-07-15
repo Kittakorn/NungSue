@@ -27,6 +27,7 @@ namespace NungSue.Entities
         public virtual DbSet<CustomerAddress> CustomerAddresses { get; set; }
         public virtual DbSet<CustomerLogin> CustomerLogins { get; set; }
         public virtual DbSet<Favorite> Favorites { get; set; }
+        public virtual DbSet<History> Histories { get; set; }
         public virtual DbSet<Order> Orders { get; set; }
         public virtual DbSet<OrderDetail> OrderDetails { get; set; }
         public virtual DbSet<PriceOffer> PriceOffers { get; set; }
@@ -215,11 +216,13 @@ namespace NungSue.Entities
 
                 entity.Property(e => e.AddressId).HasDefaultValueSql("(newsequentialid())");
 
-                entity.Property(e => e.Address1)
+                entity.Property(e => e.Address)
                     .IsRequired()
                     .HasMaxLength(250);
 
-                entity.Property(e => e.Address2).HasMaxLength(250);
+                entity.Property(e => e.CreateDate)
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("(getdate())");
 
                 entity.Property(e => e.District)
                     .IsRequired()
@@ -230,10 +233,6 @@ namespace NungSue.Entities
                     .HasMaxLength(50);
 
                 entity.Property(e => e.LastName).HasMaxLength(50);
-
-                entity.Property(e => e.Latitude).HasColumnType("decimal(8, 6)");
-
-                entity.Property(e => e.Longitude).HasColumnType("decimal(9, 6)");
 
                 entity.Property(e => e.PhoneNumber)
                     .IsRequired()
@@ -298,6 +297,31 @@ namespace NungSue.Entities
                     .HasForeignKey(d => d.CustomerId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Favorite_Customer");
+            });
+
+            modelBuilder.Entity<History>(entity =>
+            {
+                entity.HasKey(e => new { e.BookId, e.CustomerId });
+
+                entity.ToTable("History");
+
+                entity.HasIndex(e => e.CustomerId, "IX_History_CustomerId");
+
+                entity.Property(e => e.CreateDate)
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("(getdate())");
+
+                entity.HasOne(d => d.Book)
+                    .WithMany(p => p.Histories)
+                    .HasForeignKey(d => d.BookId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_History_Book");
+
+                entity.HasOne(d => d.Customer)
+                    .WithMany(p => p.Histories)
+                    .HasForeignKey(d => d.CustomerId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_History_Customer");
             });
 
             modelBuilder.Entity<Order>(entity =>

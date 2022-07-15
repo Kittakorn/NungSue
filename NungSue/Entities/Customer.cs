@@ -12,6 +12,7 @@ namespace NungSue.Entities
             CustomerAddresses = new HashSet<CustomerAddress>();
             CustomerLogins = new HashSet<CustomerLogin>();
             Favorites = new HashSet<Favorite>();
+            Histories = new HashSet<History>();
             Orders = new HashSet<Order>();
             ShoppingCarts = new HashSet<ShoppingCart>();
         }
@@ -30,6 +31,7 @@ namespace NungSue.Entities
         public virtual ICollection<CustomerAddress> CustomerAddresses { get; set; }
         public virtual ICollection<CustomerLogin> CustomerLogins { get; set; }
         public virtual ICollection<Favorite> Favorites { get; set; }
+        public virtual ICollection<History> Histories { get; set; }
         public virtual ICollection<Order> Orders { get; set; }
         public virtual ICollection<ShoppingCart> ShoppingCarts { get; set; }
     }

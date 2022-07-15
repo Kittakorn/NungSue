@@ -11,7 +11,14 @@
 
 <div class="list-group shadow-lg">
     <div class="list-group-item text-center py-4">
-        <img src="@userProfile" class="rounded-circle" width="150" height="150">
+        @if (!string.IsNullOrEmpty( userProfile))
+        {
+            <img src="@userProfile" class="rounded-circle" width="150" height="150">
+        }
+        else
+        {
+            <img src="~/img/avatar-sign.png" class="rounded-circle" width="150" height="150">
+        }
     </div>
     <a asp-controller="User" asp-action="Profile" class="list-group-item list-group-item-action">
         <i class="fa-solid fa-user fa-lg w-25" style="color:#1E88E5"></i>ข้อมูลของฉัน
@@ -28,9 +35,9 @@
             <i class="fa-solid fa-key fa-lg w-25" style="color:#43A047"></i>เปลี่ยนรหัสผ่าน
         </a>
     }
-    <button type="button" class="list-group-item list-group-item-action">
-        <i class="fa-solid fa-location-dot fa-lg w-25" style="color:#17A589"></i>ที่อยู่
-    </button>
+    <a asp-controller="User" asp-action="Address" class="list-group-item list-group-item-action">
+        <i class="fa-solid fa-location-dot fa-lg w-25" style="color:#17A589"></i>ที่อยู่ของฉัน
+    </a>
     <button type="button" class="list-group-item list-group-item-action">
         <i class="fa-solid fa-clipboard-list fa-lg w-25" style="color:#F39C12"></i>รายการสั่งซื้อ
     </button>
