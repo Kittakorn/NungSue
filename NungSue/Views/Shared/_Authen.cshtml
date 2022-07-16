@@ -1,9 +1,13 @@
 ﻿@using NungSue.Constants
 @using System.Security.Claims
+@using NungSue.Entities
+@inject NungSueContext Context
 
 @{
     var IsAuthenticated = User.Identity.IsAuthenticated && User.Identity.AuthenticationType == AuthSchemes.CustomerAuth;
     var userProfile = User.FindFirstValue(ClaimTypes.Actor);
+    var customerId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+    var count = Context.ShoppingCarts.Count(x => x.CustomerId == customerId);
 }
 
 @if (IsAuthenticated)
@@ -12,7 +16,7 @@
         <a class="nav-link text-dark" asp-area="Admin" asp-controller="Book" asp-action="">
             <span class="fa-layers fa-fw fa-lg">
                 <i class="fa-solid fa-cart-shopping text-muted"></i>
-                <span class="fa-layers-counter fs-2">4</span>
+                <span id="cart-count" class="fa-layers-counter fs-1 @(count==0?"d-none":null)">@count</span>
             </span>&ensp;ตะกร้าสินค้า
         </a>
     </li>

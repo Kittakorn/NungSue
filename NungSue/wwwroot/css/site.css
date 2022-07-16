@@ -87,3 +87,8 @@ th {
         -webkit-box-orient: vertical;
         overflow: hidden;
     }
+
+.fa-layers-counter {
+    margin-right: -5px;
+    margin-top: -5px;
+}

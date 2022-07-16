@@ -8,4 +8,50 @@
     <h4>ที่อยู่ของฉัน</h4>
     <a class="btn btn-success btn-sm" asp-action="AddressCreateOrUpdate"><i class="fa-solid fa-plus"></i>&ensp;เพิ่มที่อยู่</a>
 </div>
-<hr class="mt-1"/>
+<hr class="mt-1" />
+@for (var i = 0; i < Model.Count; i++)
+{
+    <div class="card shadow shadow-lg mb-2">
+        <div class="card-body">
+            <div class="d-flex justify-content-between">
+                <div class="row w-75">
+                    <div class="col-lg-3 col-5">
+                        <b>ชื่อผู้รับ</b>
+                    </div>
+                    <div class="col-lg-9 col-7">
+                        @Model[i].FullName
+                    </div>
+                    <div class="col-lg-3 col-5">
+                        <b>เบอร์ติดต่อ</b>
+                    </div>
+                    <div class="col-lg-9 col-7">
+                        @Model[i].PhoneNumber
+                    </div>
+                    <div class="col-lg-3 col-5">
+                        <b>ที่อยู่ในการจัดส่ง</b>
+                    </div>
+                    <div class="col-lg-9 col-7">
+                        @Model[i].FullAddress
+                    </div>
+                    @if (@Model[i].IsDefault)
+                    {
+                        <div class="col-12 mt-2">
+                            <small class="border border-2 p-1 rounded-3 border-danger text-danger">ค่าเรื่มต้น</small>
+                        </div>
+                    }
+                </div>
+                <div>
+                    <a asp-action="AddressCreateOrUpdate" asp-route-line="@(i+1)" class="btn bg-primary btn-sm text-white"><i class="fa-solid fa-pencil"></i></a>
+                    @if (!Model[i].IsDefault)
+                    {
+                        <a asp-action="DeleteAddress" asp-route-addressId="@Model[i].AddressId" class="btn btn-danger btn-sm text-white"><i class="fa-solid fa-trash"></i></a>
+                    }
+                    else
+                    {
+                        <button disabled class="btn btn-danger btn-sm text-white"><i class="fa-solid fa-trash"></i></button>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}

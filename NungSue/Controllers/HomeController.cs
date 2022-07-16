@@ -103,4 +103,37 @@ public class HomeController : Controller
         await _context.SaveChangesAsync();
         return Json(favorite == null);
     }
+
+    [Route("cart/add/{bookId:guid}")]
+    public async Task<JsonResult> AddBookToCart(Guid bookId)
+    {
+        var customer = await GetCustomer();
+        var shoppingCart = await _context.ShoppingCarts.FirstOrDefaultAsync(x => x.BookId == bookId && x.CustomerId == customer.CustomerId);
+        if (shoppingCart == null)
+        {
+            shoppingCart = new ShoppingCart();
+            shoppingCart.BookId = bookId;
+            shoppingCart.CustomerId = customer.CustomerId;
+            shoppingCart.CreateDate = DateTime.Now;
+            shoppingCart.Quantity = 1;
+            await _context.AddAsync(shoppingCart);
+        }
+        else
+        {
+            shoppingCart.Quantity++;
+            _context.Update(shoppingCart);
+        }
+
+        await _context.SaveChangesAsync();
+        var count = await _context.ShoppingCarts.CountAsync(x => x.CustomerId == customer.CustomerId);
+        return Json(count);
+    }
+
+    private async Task<Customer> GetCustomer()
+    {
+        var customerId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+        var customer = await _context.Customers.FindAsync(customerId);
+        return customer;
+    }
+
 }

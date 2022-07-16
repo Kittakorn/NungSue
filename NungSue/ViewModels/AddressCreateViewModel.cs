@@ -2,7 +2,7 @@
 
 public class AddressCreateViewModel
 {
-    public Guid? AddressId { get; set; }
+    public Guid AddressId { get; set; }
     public string FirstName { get; set; }
     public string LastName { get; set; }
     public string PhoneNumber { get; set; }
@@ -12,5 +12,4 @@ public class AddressCreateViewModel
     public string Province { get; set; }
     public string ZipCode { get; set; }
     public bool IsDefault { get; set; }
-    public bool HasAddress { get; set; }
 }

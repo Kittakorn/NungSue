@@ -8,6 +8,7 @@ using NungSue.Models;
 using NungSue.ViewModels;
 using System.Net;
 using System.Security.Claims;
+using System.Linq.Dynamic.Core;
 
 namespace NungSue.Controllers;
 
@@ -43,7 +44,7 @@ public class UserController : Controller
             {
                 AddressId = x.AddressId,
                 FullName = $"{x.FirstName} {x.LastName}",
-                PhoneNumber = x.PhoneNumber,
+                PhoneNumber = x.PhoneNumber.Insert(2, "-").Insert(7, "-"),
                 IsDefault = x.IsDefault,
                 FullAddress = $"{x.Address} ตำบล{x.District} อำเภอ{x.SubDistrict} จังหวัด{x.Province} {x.ZipCode}"
             })
@@ -63,17 +64,13 @@ public class UserController : Controller
 
         if (!line.HasValue)
         {
-            return View(new AddressCreateViewModel
-            {
-                IsDefault = customerAddress.Count == 0,
-                HasAddress = customerAddress.Count != 0
-            });
+            return View(new AddressCreateViewModel());
         }
 
         if (line.Value > customerAddress.Count)
             return NotFound();
 
-        var address = customerAddress[line.Value];
+        var address = customerAddress[line.Value - 1];
 
         var viewModel = new AddressCreateViewModel
         {
@@ -86,8 +83,7 @@ public class UserController : Controller
             SubDistrict = address.SubDistrict,
             Province = address.Province,
             ZipCode = address.ZipCode,
-            HasAddress = true,
-            IsDefault = false
+            IsDefault = address.IsDefault
         };
 
         return View(viewModel);
@@ -104,29 +100,20 @@ public class UserController : Controller
 
         var address = new CustomerAddress();
         var customer = await GetCustomer();
+        var customerAddress = await _context.CustomerAddresses.Where(x => x.CustomerId == customer.CustomerId).ToListAsync();
 
-        if (model.AddressId != null)
+        if (model.IsDefault)
+        {
+            customerAddress.ForEach(x => x.IsDefault = false);
+        }
+        else if (customerAddress.Count == 0)
+        {
+            model.IsDefault = true;
+        }
+
+        if (model.AddressId != Guid.Empty)
         {
             address = await _context.CustomerAddresses.FindAsync(model.AddressId);
-            var defaultAddress = await _context.CustomerAddresses.FirstOrDefaultAsync(x => x.IsDefault && x.CustomerId == customer.CustomerId && x.AddressId != address.AddressId);
-
-            if (model.IsDefault && defaultAddress != null)
-            {
-                defaultAddress.IsDefault = false;
-                _context.CustomerAddresses.Update(defaultAddress);
-            }
-            else
-            {
-                address.IsDefault = model.IsDefault;
-            }
-        }
-        else
-        {
-            var hasAddress = await _context.CustomerAddresses.CountAsync(x => x.CustomerId == customer.CustomerId);
-            if (hasAddress == 0)
-                address.IsDefault = true;
-            else
-                address.IsDefault = model.IsDefault;
         }
 
         address.FirstName = model.FirstName;
@@ -138,6 +125,8 @@ public class UserController : Controller
         address.Province = model.Province;
         address.ZipCode = model.ZipCode;
         address.CustomerId = customer.CustomerId;
+        address.IsDefault = model.IsDefault;
+
 
         if (model.AddressId != Guid.Empty)
             _context.CustomerAddresses.Update(address);
@@ -147,6 +136,20 @@ public class UserController : Controller
         await _context.SaveChangesAsync();
         _notify.Success("เพิ่มที่อยู่สำเร็จ");
 
+        return RedirectToAction("Address");
+    }
+
+    [Route("address/delete/{addressId:guid}")]
+    public async Task<IActionResult> DeleteAddress(Guid addressId)
+    {
+        var address = await _context.CustomerAddresses.FindAsync(addressId);
+        if (address == null)
+            return NotFound();
+
+        _context.CustomerAddresses.Remove(address);
+        await _context.SaveChangesAsync();
+
+        _notify.Success("ลบอยู่ที่แล้ว");
         return RedirectToAction("Address");
     }
 
@@ -222,20 +225,21 @@ public class UserController : Controller
     {
         var customerId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
 
-        var query = _context.Books
-            .Include(x => x.PriceOffer)
-            .Include(x => x.Favorites)
-            .Where(x => x.Favorites.Any(f => f.CustomerId == customerId));
+        var query = _context.Favorites
+            .Include(x => x.Book)
+            .ThenInclude(x => x.PriceOffer)
+            .Where(x => x.CustomerId == customerId)
+            .OrderByDescending(x => x.CreateDate);
 
         var books = await query.Select(x => new BookItem
         {
             BookId = x.BookId,
-            Description = x.Description,
-            Title = x.Title,
-            Price = x.Price.ToString("N0"),
-            PromotionPrice = x.PriceOffer == null ? null : x.PriceOffer.NewPrice.ToString("N0"),
-            PromotionText = x.PriceOffer == null ? null : x.PriceOffer.PromotionText,
-            BookImageUrl = _config.GetValue<string>("ImageUrl") + x.BookImage
+            Description = x.Book.Description,
+            Title = x.Book.Title,
+            Price = x.Book.Price.ToString("N0"),
+            PromotionPrice = x.Book.PriceOffer == null ? null : x.Book.PriceOffer.NewPrice.ToString("N0"),
+            PromotionText = x.Book.PriceOffer == null ? null : x.Book.PriceOffer.PromotionText,
+            BookImageUrl = _config.GetValue<string>("ImageUrl") + x.Book.BookImage
         }).ToListAsync();
 
         return View(books);
@@ -253,6 +257,4 @@ public class UserController : Controller
         var customer = await _context.Customers.FindAsync(customerId);
         return customer;
     }
-
-
 }

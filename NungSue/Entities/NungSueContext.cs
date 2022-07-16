@@ -286,6 +286,10 @@ namespace NungSue.Entities
 
                 entity.ToTable("Favorite");
 
+                entity.Property(e => e.CreateDate)
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("(getdate())");
+
                 entity.HasOne(d => d.Book)
                     .WithMany(p => p.Favorites)
                     .HasForeignKey(d => d.BookId)
@@ -476,6 +480,8 @@ namespace NungSue.Entities
                 entity.ToTable("ShoppingCart");
 
                 entity.HasIndex(e => e.CustomerId, "IX_ShoppingCart_CustomerId");
+
+                entity.Property(e => e.CreateDate).HasColumnType("datetime");
 
                 entity.HasOne(d => d.Book)
                     .WithMany(p => p.ShoppingCarts)

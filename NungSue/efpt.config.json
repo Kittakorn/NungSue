@@ -98,7 +98,7 @@
          "ObjectType": 2
       }
    ],
-   "UiHint": "FL2-SALES-PC-06\\SQLEXPRESS.NungSue",
+   "UiHint": "desktop-d5n490t\\sqlexpress.NungSue.dbo",
    "UseBoolPropertiesWithoutDefaultSql": false,
    "UseDatabaseNames": true,
    "UseDbContextSplitting": false,

@@ -9,7 +9,7 @@
     request.done(
         function (response) {
             if (response) {
-                 $(e).removeClass('text-muted').addClass('text-danger');
+                $(e).removeClass('text-muted').addClass('text-danger');
                 var notyf = new Notyf();
                 notyf.success({
                     message: 'เพิ่มหนังสือในรายการโปรดแล้ว',
@@ -29,4 +29,36 @@
         }
     );
 }
+
+function AddBookToCart(e) {
+    var bookId = $(e).attr("value");
+    var request = $.ajax({
+        type: 'GET',
+        url: '/cart/add/' + bookId,
+        dataType: "json"
+    });
+
+    request.done(
+        function (count) {
+            if (count > 0)
+                $("#cart-count").removeClass('d-none').html(count);
+            else
+                $("#cart-count").addClass('d-none');
+
+            var notyf = new Notyf();
+            notyf.success({
+                message: 'เพิ่มหนังสือลงตะกร้าสินค้าแล้ว',
+                dismissible: true
+            })
+        }
+    );
+
+    request.catch(
+        function () {
+            window.location.href = '/account/sign-in?ReturnUrl=' + encodeURIComponent(window.location.pathname);
+        }
+    );
+}
+
+
 
