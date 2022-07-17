@@ -6,12 +6,13 @@
 @{
     var IsAuthenticated = User.Identity.IsAuthenticated && User.Identity.AuthenticationType == AuthSchemes.CustomerAuth;
     var userProfile = User.FindFirstValue(ClaimTypes.Actor);
-    var customerId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
-    var count = Context.ShoppingCarts.Count(x => x.CustomerId == customerId);
 }
 
 @if (IsAuthenticated)
 {
+    var customerId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+    var count = Context.ShoppingCarts.Count(x => x.CustomerId == customerId);
+
     <li class="nav-item me-2">
         <a class="nav-link text-dark" asp-area="Admin" asp-controller="Book" asp-action="">
             <span class="fa-layers fa-fw fa-lg">

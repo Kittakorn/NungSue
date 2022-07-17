@@ -60,6 +60,7 @@ public class HomeController : Controller
         var books = await query.Select(x => new BookItem
         {
             BookId = x.BookId,
+            Barcode = x.Barcode,
             Description = x.Description,
             Title = x.Title,
             Price = x.Price.ToString("N0"),
@@ -129,11 +130,37 @@ public class HomeController : Controller
         return Json(count);
     }
 
-    private async Task<Customer> GetCustomer()
+
+    [Route("product/{barcode}")]
+    public async Task<IActionResult> BookDetail(string barcode)
     {
-        var customerId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
-        var customer = await _context.Customers.FindAsync(customerId);
-        return customer;
+        var customer = await GetCustomer();
+
+        var book = await _context.Books
+            .Include(x => x.BookTags)
+            .Include(x => x.BookAuthors)
+            .Include(x => x.Category)
+            .Include(x => x.Publisher)
+            .Include(x => x.Favorites.Where(x => x.CustomerId == customer.CustomerId && customer != null))
+            .Include(x => x.PriceOffer)
+            .FirstOrDefaultAsync(x => x.Barcode == barcode);
+
+        if (book == null)
+            return NotFound();
+
+        return View();
     }
 
+    private async Task<Customer> GetCustomer()
+    {
+        var customerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        if (customerId != null)
+        {
+            var customer = await _context.Customers.FindAsync(Guid.Parse(customerId));
+            return customer;
+        }
+
+        return null;
+    }
 }

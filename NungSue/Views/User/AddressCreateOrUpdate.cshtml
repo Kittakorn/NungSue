@@ -13,7 +13,7 @@
     <div class="d-flex justify-content-between align-items-center mb-1">
         <h4>@(Model.AddressId == Guid.Empty ?"เพิ่มที่อยู่":"แก้ไขที่อยู่")</h4>
         <div class="d-flex align-items-end">
-            @if (Model.AddressId == Guid.Empty || !Model.IsDefault)
+            @if ((Model.AddressId == Guid.Empty || !Model.IsDefault) && !Model.FirstAddress)
             {
                 <div class="me-4">
                     <div class="form-check">

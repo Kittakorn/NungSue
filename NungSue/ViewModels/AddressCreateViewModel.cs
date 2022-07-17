@@ -12,4 +12,5 @@ public class AddressCreateViewModel
     public string Province { get; set; }
     public string ZipCode { get; set; }
     public bool IsDefault { get; set; }
+    public bool FirstAddress { get; set; }
 }

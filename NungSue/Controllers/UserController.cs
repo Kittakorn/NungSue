@@ -64,7 +64,7 @@ public class UserController : Controller
 
         if (!line.HasValue)
         {
-            return View(new AddressCreateViewModel());
+            return View(new AddressCreateViewModel() { FirstAddress = customerAddress.Count == 0 });
         }
 
         if (line.Value > customerAddress.Count)

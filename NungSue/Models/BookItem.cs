@@ -3,6 +3,7 @@
     public class BookItem
     {
         public Guid BookId { get; set; }
+        public string Barcode{ get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
         public string Price { get; set; }
