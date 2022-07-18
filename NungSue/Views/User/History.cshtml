@@ -1,0 +1,62 @@
+﻿@model List<BookItem>
+
+@{
+    ViewData["Title"] = "ประวัติการเข้าชม";
+    Layout = "_LayoutUser";
+}
+
+<h4 class="mb-2">ประวัติการเข้าชม</h4>
+<hr class="mt-1" />
+@if (Model.Any())
+{
+    <div class="row">
+        @foreach (var item in Model)
+        {
+            <div class="col-lg-6" id="@item.BookId">
+                <div class="card book-item mb-3 shadow-lg" style="min-height:220px">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-4">
+                                <img src="@item.BookImageUrl" class="img-thumbnail img-fluid">
+                            </div>
+                            <div class="col-8 ps-0">
+                                <div class="d-flex bd-highlight">
+                                    <div class="w-100 pe-3">
+                                        <a asp-controller="Home" asp-action="BookDetail" asp-route-barcode="@item.Barcode" class="fw-bold book-title text-decoration-none text-black">@item.Title</a>
+                                        <p class="book-description text-muted">@item.Description</p>
+                                        @if (item.PromotionPrice != null)
+                                        {
+                                            <small class="position-absolute bottom-0 me-3 text-muted" style="padding-bottom:18px">* @item.PromotionText</small>
+                                        }
+
+                                    </div>
+                                    <div class="flex-shrink-1">
+                                        <button type="button" onclick="UpdateFavorite(this,false)" value="@item.BookId" class="fa-solid fa-heart @(item.IsFavorite?"text-danger":"text-muted") fa-lg pb-3 position-absolute top-0 end-0 me-3 pt-3"></button>
+                                        <div class="position-absolute end-0 bottom-0 me-3 pb-3">
+                                            @if (item.PromotionPrice == null)
+                                            {
+                                                <span class="text-danger fs-5">฿@item.Price</span>
+                                            }
+                                            else
+                                            {
+                                                <small class="text-muted pe-2"></small>
+                                                <span class="text-danger fs-5"><del class="text-muted fs-6">฿@item.Price</del> ฿@item.PromotionPrice</span>
+                                            }
+                                            <button type="button" onclick="AddBookToCart(this)" value="@item.BookId" class="fa-solid fa-lg fa-cart-shopping text-muted" style="padding-bottom:3px"></button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div class="text-center">
+        <h5 class="mb-2">ไม่มีรายการโปรด</h5>
+    </div>
+}

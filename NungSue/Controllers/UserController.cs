@@ -234,6 +234,7 @@ public class UserController : Controller
         var books = await query.Select(x => new BookItem
         {
             BookId = x.BookId,
+            Barcode = x.Book.Barcode,
             Description = x.Book.Description,
             Title = x.Book.Title,
             Price = x.Book.Price.ToString("N0"),
@@ -246,9 +247,32 @@ public class UserController : Controller
     }
 
     [Route("history")]
-    public IActionResult History()
+    public async Task<IActionResult> History()
     {
-        return View();
+        var customerId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+
+        var query = _context.Histories
+            .Include(x => x.Book)
+            .ThenInclude(x => x.PriceOffer)
+             .Include(x => x.Book)
+            .ThenInclude(x => x.Favorites.Where(x => x.CustomerId == customerId))
+            .Where(x => x.CustomerId == customerId)
+            .OrderByDescending(x => x.CreateDate);
+
+        var books = await query.Select(x => new BookItem
+        {
+            BookId = x.BookId,
+            Barcode = x.Book.Barcode,
+            Description = x.Book.Description,
+            Title = x.Book.Title,
+            Price = x.Book.Price.ToString("N0"),
+            PromotionPrice = x.Book.PriceOffer == null ? null : x.Book.PriceOffer.NewPrice.ToString("N0"),
+            PromotionText = x.Book.PriceOffer == null ? null : x.Book.PriceOffer.PromotionText,
+            BookImageUrl = _config.GetValue<string>("ImageUrl") + x.Book.BookImage,
+            IsFavorite = x.Book.Favorites.Count != 0
+        }).ToListAsync();
+
+        return View(books);
     }
 
     private async Task<Customer> GetCustomer()

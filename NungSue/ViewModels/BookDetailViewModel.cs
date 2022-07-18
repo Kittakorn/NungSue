@@ -15,12 +15,13 @@
         public string Price { get; set; }
         public string NewPrice { get; set; }
         public string PromotionText { get; set; }
-        public string PublishedOn { get; set; }
         public string Category { get; set; }
         public string Publisher { get; set; }
-        public string Tags { get; set; }
-        public string Authors { get; set; }
+        public List<string> Tags { get; set; }
+        public List<string> Authors { get; set; }
         public string BookImage { get; set; }
         public bool IsFavorite { get; set; }
+        public bool IsPublish { get; set; }
+        public string PublishedOn { get; set; }
     }
 }

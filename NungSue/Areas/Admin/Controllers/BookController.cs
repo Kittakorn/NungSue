@@ -141,7 +141,7 @@ namespace NungSue.Areas.Admin.Controllers
                     Size = x.Size,
                     Weight = x.Weight.ToString(),
                     NumberOfPage = x.NumberOfPage.ToString(),
-                    MonthOfPublication = x.MontOfPublication,
+                    MonthOfPublication = x.MonthOfPublication,
                     PublishedOn = x.PublishedOn,
                     TagIds = x.BookTags.Select(t => t.TagId).ToList(),
                     AuthorIds = x.BookAuthors.Select(a => a.AuthorId).ToList(),
@@ -213,7 +213,7 @@ namespace NungSue.Areas.Admin.Controllers
             book.Size = model.Size;
             book.Weight = int.Parse(model.Weight, NumberStyles.AllowThousands);
             book.NumberOfPage = int.Parse(model.NumberOfPage, NumberStyles.AllowThousands);
-            book.MontOfPublication = model.MonthOfPublication;
+            book.MonthOfPublication = model.MonthOfPublication;
             book.Price = int.Parse(model.Price, NumberStyles.AllowThousands);
             book.PublishedOn = model.PublishedOn;
             book.CategoryId = model.CategoryId;
@@ -256,7 +256,7 @@ namespace NungSue.Areas.Admin.Controllers
                     Weight = x.Weight.ToString("N0"),
                     NumberOfPage = x.NumberOfPage.ToString("N0"),
                     Price = x.Price.ToString("N0"),
-                    MonthOfPublication = x.MontOfPublication.ToThaiString("MM/yyyy"),
+                    MonthOfPublication = x.MonthOfPublication.ToThaiString("MM/yyyy"),
                     PublishedOn = x.PublishedOn.ToThaiString("dd/MM/yyyy HH:mm"),
                     CreateBy = x.CreateByNavigation.FirstName + " " + x.CreateByNavigation.LastName,
                     CreateDate = x.CreateDate.ToThaiString("dd/MM/yyyy HH:mm"),

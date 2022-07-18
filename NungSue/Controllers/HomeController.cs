@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NungSue.Constants;
 using NungSue.Entities;
+using NungSue.Extensions;
 using NungSue.Models;
 using NungSue.ViewModels;
 using System.Diagnostics;
@@ -52,7 +53,7 @@ public class HomeController : Controller
             .Include(include)
             .Include(x => x.PriceOffer)
             .Include(x => x.Favorites)
-            .Where(x => type == "category" ? x.Category.Name == name : x.BookTags.Any(x => x.Tag.Name == name));
+            .Where(x => (type == "category" ? x.Category.Name == name : x.BookTags.Any(x => x.Tag.Name == name)) && x.IsPublish);
 
         var id = User.FindFirstValue(ClaimTypes.NameIdentifier);
         var customerId = id == null ? Guid.Empty : Guid.Parse(id);
@@ -130,7 +131,6 @@ public class HomeController : Controller
         return Json(count);
     }
 
-
     [Route("product/{barcode}")]
     public async Task<IActionResult> BookDetail(string barcode)
     {
@@ -143,11 +143,37 @@ public class HomeController : Controller
             .Include(x => x.Publisher)
             .Include(x => x.Favorites.Where(x => x.CustomerId == customer.CustomerId && customer != null))
             .Include(x => x.PriceOffer)
+            .Where(x => x.IsPublish)
+            .Select(x => new BookDetailViewModel
+            {
+                BookId = x.BookId,
+                Barcode = x.Barcode,
+                Title = x.Title,
+                Description = x.Description,
+                Content = x.Content,
+                ListOfContents = x.ListOfContents,
+                Size = x.Size,
+                Weight = x.Weight.ToString("N0"),
+                NumberOfPage = x.NumberOfPage.ToString("N0"),
+                MonthOfPublication = x.MonthOfPublication.ToThaiString("MM/yyyy"),
+                Price = x.Price.ToString("N0"),
+                NewPrice = x.PriceOffer == null ? null : x.PriceOffer.NewPrice.ToString("N0"),
+                PromotionText = x.PriceOffer == null ? null : x.PriceOffer.PromotionText,
+                Category = x.Category.Name,
+                Publisher = x.Publisher.Name,
+                Tags = x.BookTags.Select(x => x.Tag.Name).ToList(),
+                Authors = x.BookAuthors.Select(x => x.Author.Name).ToList(),
+                BookImage = _config.GetValue<string>("ImageUrl") + x.BookImage,
+                IsFavorite = x.Favorites.Count != 0,
+                IsPublish = x.PublishedOn >= DateTime.Now,
+                PublishedOn = x.PublishedOn.ToThaiString("dd/MM/yyyy HH:mm")
+            })
             .FirstOrDefaultAsync(x => x.Barcode == barcode);
 
         if (book == null)
             return NotFound();
 
+        await AddBookToHistory(book.BookId);
         return View();
     }
 
@@ -162,5 +188,43 @@ public class HomeController : Controller
         }
 
         return null;
+    }
+
+    private async Task AddBookToHistory(Guid bookId)
+    {
+        var customer = await GetCustomer();
+        if (customer == null)
+            return;
+
+        var history = await _context.Histories.FirstOrDefaultAsync(x => x.CustomerId == customer.CustomerId && x.BookId == bookId);
+
+        if (history != null)
+        {
+            history.CreateDate = DateTime.Now;
+            _context.Histories.Update(history);
+        }
+        else
+        {
+            history = new History
+            {
+                BookId = bookId,
+                CustomerId = customer.CustomerId,
+                CreateDate = DateTime.Now
+            };
+
+            var count = await _context.Histories.CountAsync(x => x.CustomerId == customer.CustomerId);
+            if (count == 20)
+            {
+                var oldVisit = await _context.Histories
+                    .OrderBy(x => x.CreateDate)
+                    .FirstOrDefaultAsync(x => x.CustomerId == customer.CustomerId);
+
+                _context.Histories.Remove(oldVisit);
+            }
+
+            await _context.Histories.AddAsync(history);
+        }
+
+        await _context.SaveChangesAsync();
     }
 }

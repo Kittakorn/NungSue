@@ -26,7 +26,7 @@ namespace NungSue.Entities
         public string Size { get; set; }
         public int Weight { get; set; }
         public int NumberOfPage { get; set; }
-        public DateTime MontOfPublication { get; set; }
+        public DateTime MonthOfPublication { get; set; }
         public int Price { get; set; }
         public DateTime PublishedOn { get; set; }
         public Guid CreateBy { get; set; }

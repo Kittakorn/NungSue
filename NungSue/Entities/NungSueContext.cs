@@ -80,7 +80,7 @@ namespace NungSue.Entities
 
                 entity.Property(e => e.Description).HasMaxLength(250);
 
-                entity.Property(e => e.MontOfPublication).HasColumnType("date");
+                entity.Property(e => e.MonthOfPublication).HasColumnType("date");
 
                 entity.Property(e => e.PublishedOn).HasColumnType("datetime");
 
