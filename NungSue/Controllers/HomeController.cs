@@ -174,7 +174,7 @@ public class HomeController : Controller
             return NotFound();
 
         await AddBookToHistory(book.BookId);
-        return View();
+        return View(book);
     }
 
     private async Task<Customer> GetCustomer()

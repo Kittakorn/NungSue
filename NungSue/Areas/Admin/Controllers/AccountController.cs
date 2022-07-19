@@ -77,7 +77,7 @@ namespace NungSue.Areas.Admin.Controllers
                 new Claim("UserId", user.UserId.ToString()),
                 new Claim("FullName", $"{user.FirstName} {user.LastName}")
             };
-            claims.AddRange(permissions.Distinct().Select(x => new Claim("Permission", x)));
+            claims.AddRange(permissions.Distinct().Select(x => new Claim(ClaimTypes.Role, x)));
 
             var authProperties = new AuthenticationProperties { IsPersistent = model.RememberMe };
             var claimsIdentity = new ClaimsIdentity(claims, AuthSchemes.UserAuth);

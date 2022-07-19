@@ -1,5 +1,47 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model BookDetailViewModel
+
 @{
+    ViewData["Title"] = Model.Title;
 }
+<div style="padding:0px 200px">
+    <div class="row">
+        <div class="col-lg-4">
+            <img src="@Model.BookImage" class="img-thumbnail float-end" />
+        </div>
+        <div class="col-lg-8 position-relative">
+            <h3>@Model.Title</h3>
+            <p class="text-muted fs-5">@Model.Description</p>
+            <b class="fs-5">
+                ผู้เขียน
+                @foreach (var item in Model.Authors)
+                {
+                    <a href="#" class="text-decoration-none">@item</a>
+                }
+            </b>
+            <button type="button" onclick="UpdateFavorite(this,false)" value="@Model.BookId" class="fa-solid fa-heart @(Model.IsFavorite?"text-danger":"text-muted") fa-2xl bottom-0 start-0 position-absolute"></button>
+            <button type="button" value="@Model.BookId" class="fa-solid fa-share text-muted fa-2xl bottom-0 start-0 position-absolute" style="margin-left:45px!important"></button>
+        </div>
+        <div class="col-12 mt-2">
+            แท็ก :
+            @foreach (var item in Model.Tags)
+            {
+                <span class="bg-secondary bg-opacity-25 px-1 rounded rounded-2 text-opacity-50">@item</span>
+            }
+        </div>
+        <div class="col-12 mt-3">
+            <div class="w-100 fs-5 bg-secondary text-white bg-opacity-75 p-1 ps-2 rounded rounded-2 mb-2">
+                เนื้อหาพอสังเขป
+            </div>
+            <p>&nbsp;&nbsp;&nbsp;&nbsp;@Model.Content</p>
+        </div>
+        @if (!string.IsNullOrEmpty(Model.ListOfContents))
+        {
+            <div class="col-12 mt-3">
+                <div class="w-100 fs-5 bg-secondary text-white bg-opacity-75 p-1 ps-2 rounded rounded-2 mb-2">
+                    สารบัญ
+                </div>
+                <pre>@Model.ListOfContents</pre>
+            </div>
+        }
+    </div>
+</div>
