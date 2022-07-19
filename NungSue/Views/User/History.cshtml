@@ -17,7 +17,9 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="col-4">
-                                <img src="@item.BookImageUrl" class="img-thumbnail img-fluid">
+                                <a asp-controller="Home" asp-action="BookDetail" asp-route-barcode="@item.Barcode">
+                                    <img src="@item.BookImageUrl" class="img-thumbnail img-fluid">
+                                </a>
                             </div>
                             <div class="col-8 ps-0">
                                 <div class="d-flex bd-highlight">

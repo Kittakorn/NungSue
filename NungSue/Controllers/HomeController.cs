@@ -1,12 +1,9 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using NungSue.Constants;
 using NungSue.Entities;
 using NungSue.Extensions;
 using NungSue.Models;
 using NungSue.ViewModels;
-using System.Diagnostics;
 using System.Linq.Dynamic.Core;
 using System.Security.Claims;
 
@@ -134,14 +131,15 @@ public class HomeController : Controller
     [Route("product/{barcode}")]
     public async Task<IActionResult> BookDetail(string barcode)
     {
-        var customer = await GetCustomer();
+        var id = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var customerId = id == null ? Guid.Empty : Guid.Parse(id);
 
         var book = await _context.Books
             .Include(x => x.BookTags)
             .Include(x => x.BookAuthors)
             .Include(x => x.Category)
             .Include(x => x.Publisher)
-            .Include(x => x.Favorites.Where(x => x.CustomerId == customer.CustomerId && customer != null))
+            .Include(x => x.Favorites)
             .Include(x => x.PriceOffer)
             .Where(x => x.IsPublish)
             .Select(x => new BookDetailViewModel
@@ -164,8 +162,8 @@ public class HomeController : Controller
                 Tags = x.BookTags.Select(x => x.Tag.Name).ToList(),
                 Authors = x.BookAuthors.Select(x => x.Author.Name).ToList(),
                 BookImage = _config.GetValue<string>("ImageUrl") + x.BookImage,
-                IsFavorite = x.Favorites.Count != 0,
-                IsPublish = x.PublishedOn >= DateTime.Now,
+                IsFavorite = x.Favorites.Any(x => x.CustomerId == customerId),
+                IsPublish = x.PublishedOn <= DateTime.Now,
                 PublishedOn = x.PublishedOn.ToThaiString("dd/MM/yyyy HH:mm")
             })
             .FirstOrDefaultAsync(x => x.Barcode == barcode);

@@ -3,6 +3,10 @@
     font-family: 'Sarabun', sans-serif;
 }
 
+pre {
+    font-family: 'Sarabun', sans-serif !important
+}
+
 html {
     position: relative;
     min-height: 100%;

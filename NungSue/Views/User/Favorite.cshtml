@@ -17,12 +17,14 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="col-4">
-                                <img src="@item.BookImageUrl" class="img-thumbnail img-fluid">
+                                <a asp-controller="Home" asp-action="BookDetail" asp-route-barcode="@item.Barcode">
+                                    <img src="@item.BookImageUrl" class="img-thumbnail img-fluid">
+                                </a>
                             </div>
                             <div class="col-8 ps-0">
                                 <div class="d-flex bd-highlight">
                                     <div class="w-100 pe-3">
-                                        <p class="fw-bold book-title">@item.Title</p>
+                                        <a asp-controller="Home" asp-action="BookDetail" asp-route-barcode="@item.Barcode" class="fw-bold book-title text-decoration-none text-black">@item.Title</a>
                                         <p class="book-description text-muted">@item.Description</p>
                                         @if (item.PromotionPrice != null)
                                         {
