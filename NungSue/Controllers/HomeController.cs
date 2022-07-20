@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using NungSue.Constants;
 using NungSue.Entities;
 using NungSue.Extensions;
 using NungSue.Models;
@@ -107,7 +109,9 @@ public class HomeController : Controller
     public async Task<JsonResult> AddBookToCart(Guid bookId)
     {
         var customer = await GetCustomer();
-        var shoppingCart = await _context.ShoppingCarts.FirstOrDefaultAsync(x => x.BookId == bookId && x.CustomerId == customer.CustomerId);
+        var shoppingCart = await _context.ShoppingCarts
+                                         .Include(x => x.Book)
+                                         .FirstOrDefaultAsync(x => x.BookId == bookId && x.CustomerId == customer.CustomerId);
         if (shoppingCart == null)
         {
             shoppingCart = new ShoppingCart();
@@ -124,8 +128,46 @@ public class HomeController : Controller
         }
 
         await _context.SaveChangesAsync();
-        var count = await _context.ShoppingCarts.CountAsync(x => x.CustomerId == customer.CustomerId);
+        var count = await _context.ShoppingCarts
+                                  .Include(x => x.Book)
+                                  .CountAsync(x => x.CustomerId == customer.CustomerId &&
+                                                   x.Book.IsPublish &&
+                                                   x.Book.PublishedOn <= DateTime.Now);
         return Json(count);
+    }
+
+    [Route("cart/update/{bookId:guid}/{amount:int}")]
+    public async Task<JsonResult> UpdateCart(Guid bookId, int amount)
+    {
+        var customer = await GetCustomer();
+        var shoppingCart = await _context.ShoppingCarts.FirstOrDefaultAsync(x => x.BookId == bookId && x.CustomerId == customer.CustomerId);
+        var qty = shoppingCart.Quantity + amount;
+
+        if (qty == shoppingCart.Quantity)
+            qty = 0;
+
+        if (qty <= 0)
+        {
+            _context.ShoppingCarts.Remove(shoppingCart);
+        }
+        else
+        {
+            shoppingCart.Quantity = qty;
+            _context.ShoppingCarts.Update(shoppingCart);
+        }
+
+        await _context.SaveChangesAsync();
+
+        var total = _context.ShoppingCarts
+            .Include(x => x.Book)
+            .ThenInclude(x => x.PriceOffer)
+            .Where(x => x.CustomerId == customer.CustomerId && x.Book.IsPublish && x.Book.PublishedOn <= DateTime.Now)
+            .Sum(x => x.Quantity * (x.Book.PriceOffer == null ? x.Book.Price : x.Book.PriceOffer.NewPrice)).ToString("N0");
+
+        var count = await _context.ShoppingCarts
+                        .CountAsync(x => x.CustomerId == customer.CustomerId && x.Book.IsPublish && x.Book.PublishedOn <= DateTime.Now);
+
+        return Json(new { qty, total, count });
     }
 
     [Route("product/{barcode}")]
@@ -173,6 +215,30 @@ public class HomeController : Controller
 
         await AddBookToHistory(book.BookId);
         return View(book);
+    }
+
+    [Authorize(AuthenticationSchemes = AuthSchemes.CustomerAuth)]
+    public async Task<IActionResult> Cart()
+    {
+        var customer = await GetCustomer();
+
+        await _context.ShoppingCarts
+                      .Include(x => x.Book)
+                      .Where(x => !x.Book.IsPublish &&
+                                   x.Book.PublishedOn > DateTime.Now &&
+                                   x.CustomerId == customer.CustomerId)
+                      .DeleteFromQueryAsync();
+        await _context.SaveChangesAsync();
+
+        var carts = await _context.ShoppingCarts
+                            .Include(x => x.Book)
+                            .ThenInclude(x => x.PriceOffer)
+                            .Where(x => x.Book.IsPublish &&
+                                        x.Book.PublishedOn <= DateTime.Now &&
+                                        x.CustomerId == customer.CustomerId)
+                            .ToListAsync();
+
+        return View(carts);
     }
 
     private async Task<Customer> GetCustomer()
