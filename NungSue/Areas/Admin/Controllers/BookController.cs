@@ -90,18 +90,18 @@ namespace NungSue.Areas.Admin.Controllers
 
                 recordsTotal = await books.CountAsync();
 
-                var data = await books.Skip(skip).Take(pageSize).Select(x => new BookViewModel
+                var data = await books.Skip(skip).Take(pageSize).Select(x => new
                 {
-                    BookId = x.BookId,
-                    Barcode = x.Barcode,
+                    x.BookId,
+                    x.Barcode,
                     BookCategory = x.Category.Name,
-                    Title = x.Title,
+                    x.Title,
                     Price = x.Price.ToString("N0"),
                     PromotionPrice = x.PriceOffer == null ? null : x.PriceOffer.NewPrice.ToString("N0"),
                     PublishedOn = x.PublishedOn.ToThaiString("dd/MM/yyyy HH:mm"),
                     Tags = string.Join(", ", x.BookTags.Select(x => x.Tag.Name)),
                     Authors = string.Join(", ", x.BookAuthors.Select(x => x.Author.Name)),
-                    IsPublish = x.IsPublish,
+                    x.IsPublish,
                 }).ToListAsync();
 
 

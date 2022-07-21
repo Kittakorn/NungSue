@@ -53,13 +53,20 @@
         <hr />
     </div>
 }
-<div class="card">
-    <div class="card-body d-flex justify-content-end align-items-center px-5">
-        <span class="fs-5 me-3" id="count">รวม (@Model.Count รายการ) </span>
-        <span class="fs-3 me-3 text-danger" id="total">฿@Model.Sum(x=>x.Quantity * (x.Book.PriceOffer == null?x.Book.Price:x.Book.PriceOffer.NewPrice)).ToString("N0")</span>
-        <button class="btn btn-primary w-25">ชำระเงิน</button>
+@if (Model.Any())
+{
+    <div class="card" id="result">
+        <div class="card-body d-flex justify-content-end align-items-center px-5">
+            <span class="fs-5 me-3" id="count">รวม (@Model.Count รายการ) </span>
+            <span class="fs-3 me-3 text-danger" id="total">฿@Model.Sum(x=>x.Quantity * (x.Book.PriceOffer == null?x.Book.Price:x.Book.PriceOffer.NewPrice)).ToString("N0")</span>
+            <button class="btn btn-primary w-25">ชำระเงิน</button>
+        </div>
     </div>
-</div>
+}
+
+
+<h3 id="cart-empty" class="text-center @(Model.Any() ?"d-none":null)">ไม่มีสินค้าในตะกร้า</h3>
+
 
 
 @section Script{
@@ -73,6 +80,15 @@
 
             request.done(
                 function(response) {
+
+                    if (response.count == 0) {
+                        $('#cart-count').addClass('d-none');
+                        $('#result').remove();
+                        $('#cart-empty').removeClass("d-none");
+                    } else {
+                        $("#cart-count").removeClass('d-none').html(response.count);
+                    }
+
                     if (response.qty == 0) {
                         $('#' + bookId).remove();
                         $('#count').text(`รวม (${response.count} รายการ)`)

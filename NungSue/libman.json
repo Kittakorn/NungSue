@@ -28,7 +28,7 @@
       "files": [ "jquery.validate.min.js" ]
     },
     {
-      "library": "jquery-validation-unobtrusive@3.2.12",
+      "library": "jquery-validation-unobtrusive@4.0.0",
       "destination": "wwwroot/lib/jquery-validation-unobtrusive",
       "files": [ "jquery.validate.unobtrusive.min.js" ]
     },
@@ -43,12 +43,13 @@
       "destination": "wwwroot/lib/bootstrap-maxlength"
     },
     {
-      "library": "bootstrap-select@1.13.18",
+      "provider": "jsdelivr",
+      "library": "bootstrap-select@1.14.0-beta3",
       "files": [
-        "css/bootstrap-select.min.css",
-        "js/bootstrap-select.min.js",
-        "js/bootstrap-select.min.js.map",
-        "js/i18n/defaults-th_TH.min.js"
+        "dist/css/bootstrap-select.min.css",
+        "dist/js/bootstrap-select.min.js",
+        "dist/js/bootstrap-select.min.js.map",
+        "dist/js/i18n/defaults-th_TH.min.js"
       ],
       "destination": "wwwroot/lib/bootstrap-select"
     },

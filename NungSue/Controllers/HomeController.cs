@@ -218,6 +218,7 @@ public class HomeController : Controller
     }
 
     [Authorize(AuthenticationSchemes = AuthSchemes.CustomerAuth)]
+    [Route("cart")]
     public async Task<IActionResult> Cart()
     {
         var customer = await GetCustomer();
